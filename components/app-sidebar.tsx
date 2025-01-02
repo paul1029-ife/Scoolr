@@ -25,27 +25,27 @@ const data = {
     {
       title: "Dashboard",
       isActive: true,
-      url: "#",
+      url: "/dashboard",
       icon: <HomeIcon />,
     },
     {
       title: "Subjects",
-      url: "#",
+      url: "dashboard/subjects",
       icon: <Disc />,
     },
     {
       title: "Students",
-      url: "#",
+      url: "dashboard/students",
       icon: <Shirt />,
     },
     {
       title: "Billings",
-      url: "#",
+      url: "dashboard/billings",
       icon: <CreditCard />,
     },
     {
       title: "Events",
-      url: "#",
+      url: "dashboard/events",
       icon: <Timer />,
     },
   ],
