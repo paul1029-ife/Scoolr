@@ -1,64 +1,122 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Users, Clock, Filter } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Search, BookOpen, Users, Clock, Filter, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import AddSubjectModal from "./AddSubjectModal";
 
+interface Subject {
+  id: number;
+  name: string;
+  teacher: string;
+  department: string;
+  level: string;
+  students: number;
+  schedule: string;
+  time: string;
+  color: string;
+}
+
+const initialSubjects: Subject[] = [
+  {
+    id: 2,
+    name: "English Literature",
+    department: "Humanities",
+    teacher: "Mr. James Wilson",
+    students: 98,
+    level: "Senior",
+    schedule: "Tue, Thu",
+    time: "11:00 AM - 12:30 PM",
+    color: "bg-green-100",
+  },
+  {
+    id: 3,
+    name: "Physics",
+    department: "Sciences",
+    teacher: "Mrs. Linda Chen",
+    students: 85,
+    level: "Senior",
+    schedule: "Mon, Wed, Fri",
+    time: "1:00 PM - 2:30 PM",
+    color: "bg-purple-100",
+  },
+  {
+    id: 4,
+    name: "Bible Studies",
+    department: "Religious Studies",
+    teacher: "Rev. Michael Thomas",
+    students: 150,
+    level: "All Levels",
+    schedule: "Tue, Thu",
+    time: "8:00 AM - 9:30 AM",
+    color: "bg-yellow-100",
+  },
+];
 export default function Page() {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [subjects, setSubjects] = useState(initialSubjects);
+  // const [subjectToDelete, setSubjectToDelete] = useState(null);
 
-  const subjects = [
-    {
-      id: 1,
-      name: "Mathematics",
-      department: "Sciences",
-      teacher: "Dr. Sarah Johnson",
-      students: 125,
-      level: "Senior",
-      schedule: "Mon, Wed, Fri",
-      time: "9:00 AM - 10:30 AM",
-      color: "bg-blue-100",
-    },
-    {
-      id: 2,
-      name: "English Literature",
-      department: "Humanities",
-      teacher: "Mr. James Wilson",
-      students: 98,
-      level: "Senior",
-      schedule: "Tue, Thu",
-      time: "11:00 AM - 12:30 PM",
-      color: "bg-green-100",
-    },
-    {
-      id: 3,
-      name: "Physics",
-      department: "Sciences",
-      teacher: "Mrs. Linda Chen",
-      students: 85,
-      level: "Senior",
-      schedule: "Mon, Wed, Fri",
-      time: "1:00 PM - 2:30 PM",
-      color: "bg-purple-100",
-    },
-    {
-      id: 4,
-      name: "Bible Studies",
-      department: "Religious Studies",
-      teacher: "Rev. Michael Thomas",
-      students: 150,
-      level: "All Levels",
-      schedule: "Tue, Thu",
-      time: "8:00 AM - 9:30 AM",
-      color: "bg-yellow-100",
-    },
-  ];
+  useEffect(() => {
+    // Load subjects from localStorage on component mount
+    const storedSubjects = JSON.parse(localStorage.getItem("subjects") || "[]");
+    setSubjects({ ...initialSubjects, ...storedSubjects });
+  }, []);
+
+  const handleSubjectAdded = () => {
+    // Reload subjects from localStorage when a new subject is added
+    const storedSubjects = JSON.parse(localStorage.getItem("subjects") || "[]");
+    setSubjects(storedSubjects);
+  };
+
+  const loadSubjects = () => {
+    const storedSubjects = JSON.parse(localStorage.getItem("subjects") || "[]");
+    setSubjects(storedSubjects);
+  };
+
+  useEffect(() => {
+    loadSubjects();
+  }, []);
+
+  const handleDeleteSubject = (subjectId: number) => {
+    try {
+      const updatedSubjects = subjects.filter(
+        (subject: Subject) => subject.id !== subjectId
+      );
+      localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
+      setSubjects(updatedSubjects);
+      toast({
+        title: "Subject Deleted",
+        description: "The subject has been successfully removed.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete subject. Please try again.",
+        variant: "destructive",
+      });
+      console.log(error);
+    }
+  };
 
   const filteredSubjects = subjects.filter(
-    (subject) =>
+    (subject: Subject) =>
       subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       subject.teacher.toLowerCase().includes(searchTerm.toLowerCase()) ||
       subject.department.toLowerCase().includes(searchTerm.toLowerCase())
@@ -66,7 +124,7 @@ export default function Page() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header Section */}
+      {/* Previous header and search sections remain the same */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Subjects</h1>
@@ -74,9 +132,7 @@ export default function Page() {
             Manage and view all subjects
           </p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          Add New Subject
-        </Button>
+        <AddSubjectModal onSubjectAdded={handleSubjectAdded} />
       </div>
 
       {/* Search and Filter Section */}
@@ -95,8 +151,6 @@ export default function Page() {
           Filters
         </Button>
       </div>
-
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
@@ -118,7 +172,7 @@ export default function Page() {
             <div>
               <p className="text-sm text-muted-foreground">Total Teachers</p>
               <p className="text-2xl font-bold">
-                {new Set(subjects.map((s) => s.teacher)).size}
+                {new Set(subjects.map((s: Subject) => s.teacher)).size}
               </p>
             </div>
           </CardContent>
@@ -136,10 +190,9 @@ export default function Page() {
           </CardContent>
         </Card>
       </div>
-
       {/* Subjects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredSubjects.map((subject) => (
+        {filteredSubjects.map((subject: Subject) => (
           <Card key={subject.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
@@ -155,8 +208,36 @@ export default function Page() {
                     <Badge variant="outline">{subject.level}</Badge>
                   </div>
                 </div>
-                <div className={`${subject.color} p-3 rounded-full`}>
-                  <BookOpen className="h-5 w-5" />
+                <div className="flex gap-2">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Subject</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete {subject.name}? This
+                          action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-red-500 hover:bg-red-600"
+                          onClick={() => handleDeleteSubject(subject.id)}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t space-y-2">
