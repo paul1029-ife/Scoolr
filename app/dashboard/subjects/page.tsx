@@ -19,6 +19,7 @@ import {
 import { Search, BookOpen, Users, Clock, Filter, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AddSubjectModal from "./AddSubjectModal";
+import Link from "next/link";
 
 interface Subject {
   id: number;
@@ -193,67 +194,69 @@ export default function Page() {
       {/* Subjects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredSubjects.map((subject: Subject) => (
-          <Card key={subject.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-semibold">{subject.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {subject.teacher}
-                    </p>
+          <Link key={subject.id} href={`/dashboard/subjects/${subject.id}`}>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-semibold">{subject.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {subject.teacher}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">{subject.department}</Badge>
+                      <Badge variant="outline">{subject.level}</Badge>
+                    </div>
                   </div>
                   <div className="flex gap-2">
-                    <Badge variant="secondary">{subject.department}</Badge>
-                    <Badge variant="outline">{subject.level}</Badge>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="text-red-500 hover:text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Subject</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete {subject.name}? This
+                            action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-red-500 hover:bg-red-600"
+                            onClick={() => handleDeleteSubject(subject.id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="text-red-500 hover:text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Subject</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete {subject.name}? This
-                          action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          className="bg-red-500 hover:bg-red-600"
-                          onClick={() => handleDeleteSubject(subject.id)}
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                <div className="mt-4 pt-4 border-t space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{subject.students} Students</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {subject.schedule} • {subject.time}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-4 pt-4 border-t space-y-2">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{subject.students} Students</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {subject.schedule} • {subject.time}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>
