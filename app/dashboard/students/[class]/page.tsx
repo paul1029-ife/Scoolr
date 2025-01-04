@@ -1,0 +1,182 @@
+"use client";
+
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Search,
+  ArrowLeft,
+  Download,
+  Filter,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+
+// Sample data for students
+const studentsData = [
+  {
+    id: 1,
+    name: "Chioma Okafor",
+    registrationNumber: "2024/001",
+    gender: "Female",
+    guardianName: "Mr. Okafor",
+    guardianPhone: "080-xxxx-xxxx",
+    attendance: {
+      present: 45,
+      absent: 2,
+      late: 3,
+      total: 50,
+    },
+  },
+  {
+    id: 2,
+    name: "Ahmed Ibrahim",
+    registrationNumber: "2024/002",
+    gender: "Male",
+    guardianName: "Mrs. Ibrahim",
+    guardianPhone: "080-xxxx-xxxx",
+    attendance: {
+      present: 48,
+      absent: 1,
+      late: 1,
+      total: 50,
+    },
+  },
+  // Add more sample students...
+];
+
+export default function ClassPage({ params }: { params: { class: string } }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const className = params.class.replace("-", " ").toUpperCase();
+
+  const filteredStudents = studentsData.filter(
+    (student) =>
+      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.registrationNumber
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  );
+
+  const getAttendanceColor = (percentage: number) => {
+    if (percentage >= 90) return "text-green-600";
+    if (percentage >= 75) return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/students">
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold">{className}</h1>
+          <p className="text-muted-foreground">Student List & Attendance</p>
+        </div>
+        <Button variant="outline" className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          Export List
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader className="border-b">
+          <div className="flex flex-col md:flex-row gap-4 justify-between">
+            <div className="relative flex-1">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name or registration number..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                Filters
+              </Button>
+              <Button className="flex items-center gap-2">
+                Take Attendance
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Registration No.</TableHead>
+                  <TableHead>Gender</TableHead>
+                  <TableHead>Guardian</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Attendance</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredStudents.map((student) => {
+                  const attendancePercentage =
+                    (student.attendance.present / student.attendance.total) *
+                    100;
+                  return (
+                    <TableRow key={student.id}>
+                      <TableCell className="font-medium">
+                        {student.name}
+                      </TableCell>
+                      <TableCell>{student.registrationNumber}</TableCell>
+                      <TableCell>{student.gender}</TableCell>
+                      <TableCell>{student.guardianName}</TableCell>
+                      <TableCell>{student.guardianPhone}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={getAttendanceColor(attendancePercentage)}
+                          >
+                            {attendancePercentage.toFixed(1)}%
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            ({student.attendance.present}/
+                            {student.attendance.total})
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {attendancePercentage >= 75 ? (
+                          <Badge className="bg-green-100 text-green-700">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Good Standing
+                          </Badge>
+                        ) : (
+                          <Badge variant="destructive">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Poor Attendance
+                          </Badge>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
