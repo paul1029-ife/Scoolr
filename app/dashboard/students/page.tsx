@@ -5,26 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Search,
-  Users,
-  GraduationCap,
-  UserPlus,
-  School,
-  Filter,
-} from "lucide-react";
+import { Search, Users, GraduationCap, School, Filter } from "lucide-react";
 import Link from "next/link";
-
-// Types
-export interface Student {
-  id: number;
-  name: string;
-  class: string;
-  gender: string;
-  registrationNumber: string;
-  guardianName: string;
-  guardianPhone: string;
-}
 
 interface ClassData {
   name: string;
@@ -94,10 +76,6 @@ export default function Page() {
             Manage and view all students by class
           </p>
         </div>
-        <Button className="flex items-center gap-2">
-          <UserPlus className="h-4 w-4" />
-          Add New Student
-        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
@@ -159,7 +137,9 @@ export default function Page() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {filteredClasses.map((cls) => (
           <Link
-            href={`/students/${cls.name.toLowerCase().replace(" ", "-")}`}
+            href={`/dashboard/students/${cls.name
+              .toLowerCase()
+              .replace(" ", "-")}`}
             key={cls.name}
           >
             <Card className="hover:shadow-md transition-shadow cursor-pointer">

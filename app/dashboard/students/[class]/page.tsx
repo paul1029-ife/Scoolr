@@ -19,43 +19,11 @@ import {
   Filter,
   CheckCircle2,
   XCircle,
+  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-
-// Sample data for students
-const studentsData = [
-  {
-    id: 1,
-    name: "Chioma Okafor",
-    registrationNumber: "2024/001",
-    gender: "Female",
-    guardianName: "Mr. Okafor",
-    guardianPhone: "080-xxxx-xxxx",
-    attendance: {
-      present: 45,
-      absent: 2,
-      late: 3,
-      total: 50,
-    },
-  },
-  {
-    id: 2,
-    name: "Ahmed Ibrahim",
-    registrationNumber: "2024/002",
-    gender: "Male",
-    guardianName: "Mrs. Ibrahim",
-    guardianPhone: "080-xxxx-xxxx",
-    attendance: {
-      present: 48,
-      absent: 1,
-      late: 1,
-      total: 50,
-    },
-  },
-  // Add more sample students...
-];
-
+import { studentsData } from "./data";
 export default function ClassPage({ params }: { params: { class: string } }) {
   const [searchTerm, setSearchTerm] = useState("");
   const className = params.class.replace("-", " ").toUpperCase();
@@ -77,7 +45,7 @@ export default function ClassPage({ params }: { params: { class: string } }) {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/students">
+        <Link href="/dashboard/students">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -89,6 +57,10 @@ export default function ClassPage({ params }: { params: { class: string } }) {
         <Button variant="outline" className="flex items-center gap-2">
           <Download className="h-4 w-4" />
           Export List
+        </Button>
+        <Button className="flex items-center gap-2">
+          <UserPlus className="h-4 w-4" />
+          Add New Student
         </Button>
       </div>
 
