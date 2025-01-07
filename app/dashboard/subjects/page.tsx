@@ -71,14 +71,8 @@ const initialSubjects: Subject[] = [
 export default function Page() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [subjects, setSubjects] = useState(initialSubjects);
+  const [subjects, setSubjects] = useState([]);
   // const [subjectToDelete, setSubjectToDelete] = useState(null);
-
-  useEffect(() => {
-    // Load subjects from localStorage on component mount
-    const storedSubjects = JSON.parse(localStorage.getItem("subjects") || "[]");
-    setSubjects({ ...initialSubjects, ...storedSubjects });
-  }, []);
 
   const handleSubjectAdded = () => {
     // Reload subjects from localStorage when a new subject is added
@@ -88,7 +82,8 @@ export default function Page() {
 
   const loadSubjects = () => {
     const storedSubjects = JSON.parse(localStorage.getItem("subjects") || "[]");
-    setSubjects(storedSubjects);
+    setSubjects([...initialSubjects, ...storedSubjects]);
+    console.log(typeof subjects);
   };
 
   useEffect(() => {
