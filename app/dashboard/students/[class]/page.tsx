@@ -19,16 +19,21 @@ import {
   Filter,
   CheckCircle2,
   XCircle,
-  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { studentsData } from "./data";
+import { AddStudentModal, Student } from "./AddStudentModal";
 export default function ClassPage({ params }: { params: { class: string } }) {
+  const [students, setStudents] = useState(studentsData);
   const [searchTerm, setSearchTerm] = useState("");
   const className = params.class.replace("-", " ").toUpperCase();
 
-  const filteredStudents = studentsData.filter(
+  const handleAddStudent = (newStudent: Student) => {
+    setStudents((prev) => [...prev, newStudent]);
+  };
+
+  const filteredStudents = students.filter(
     (student) =>
       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.registrationNumber
@@ -58,10 +63,7 @@ export default function ClassPage({ params }: { params: { class: string } }) {
           <Download className="h-4 w-4" />
           Export List
         </Button>
-        <Button className="flex items-center gap-2">
-          <UserPlus className="h-4 w-4" />
-          Add New Student
-        </Button>
+        <AddStudentModal onAddStudent={handleAddStudent} />
       </div>
 
       <Card>
