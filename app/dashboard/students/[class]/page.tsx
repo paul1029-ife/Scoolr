@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TakeAttendanceModal } from "./TakeAttendanceModal";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -31,6 +32,24 @@ export default function ClassPage({ params }: { params: { class: string } }) {
 
   const handleAddStudent = (newStudent: Student) => {
     setStudents((prev) => [...prev, newStudent]);
+  };
+
+  const handleUpdateAttendance = (attendanceData: {
+    date: Date;
+    attendance: Record<string, boolean>;
+  }) => {
+    setStudents((prevStudents) =>
+      prevStudents.map((student) => {
+        const wasPresent = attendanceData.attendance[student.id];
+        return {
+          ...student,
+          attendance: {
+            present: student.attendance.present + (wasPresent ? 1 : 0),
+            total: student.attendance.total + 1,
+          },
+        };
+      })
+    );
   };
 
   const filteredStudents = students.filter(
@@ -83,9 +102,10 @@ export default function ClassPage({ params }: { params: { class: string } }) {
                 <Filter className="h-4 w-4" />
                 Filters
               </Button>
-              <Button className="flex items-center gap-2">
-                Take Attendance
-              </Button>
+              <TakeAttendanceModal
+                students={students}
+                onUpdateAttendance={handleUpdateAttendance}
+              />
             </div>
           </div>
         </CardHeader>
