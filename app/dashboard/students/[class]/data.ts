@@ -1,4 +1,6 @@
-export const studentsData = [
+import { Student } from "./AddStudentModal";
+
+export const studentsData: Student[] = [
   {
     id: 1,
     name: "Chioma Okafor",
