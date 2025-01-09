@@ -1,10 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Calendar,
   Clock,
@@ -25,7 +34,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Types
+// Sample data
+
+const eventTypes = [
+  { name: "Sports", color: "bg-blue-100 text-blue-700" },
+  { name: "Academic", color: "bg-green-100 text-green-700" },
+  { name: "Cultural", color: "bg-purple-100 text-purple-700" },
+  { name: "Meeting", color: "bg-yellow-100 text-yellow-700" },
+  { name: "Holiday", color: "bg-red-100 text-red-700" },
+];
+
 interface Event {
   id: string;
   title: string;
@@ -39,59 +57,218 @@ interface Event {
   status: "upcoming" | "ongoing" | "completed";
 }
 
-// Sample data
-const events: Event[] = [
-  {
-    id: "EVT-001",
-    title: "Inter-House Sports Competition",
-    description:
-      "Annual inter-house sports competition featuring track and field events",
-    type: "Sports",
-    date: "2024-02-15",
-    time: "9:00 AM - 4:00 PM",
-    location: "School Sports Complex",
-    organizer: "Sports Department",
-    attendees: 850,
-    status: "upcoming",
-  },
-  {
-    id: "EVT-002",
-    title: "Science Fair 2024",
-    description: "Exhibition of student science projects and innovations",
-    type: "Academic",
-    date: "2024-02-20",
-    time: "10:00 AM - 2:00 PM",
-    location: "School Hall",
-    organizer: "Science Department",
-    attendees: 400,
-    status: "upcoming",
-  },
-  {
-    id: "EVT-003",
-    title: "Parent-Teacher Meeting",
-    description: "First term parent-teacher conference",
-    type: "Meeting",
-    date: "2024-01-25",
-    time: "2:00 PM - 5:00 PM",
-    location: "Classrooms",
-    organizer: "School Administration",
-    attendees: 600,
-    status: "upcoming",
-  },
-  // Add more events...
-];
+interface AddEventModalProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (event: Event) => void;
+  eventTypes: { name: string; color: string }[];
+}
 
-const eventTypes = [
-  { name: "Sports", color: "bg-blue-100 text-blue-700" },
-  { name: "Academic", color: "bg-green-100 text-green-700" },
-  { name: "Cultural", color: "bg-purple-100 text-purple-700" },
-  { name: "Meeting", color: "bg-yellow-100 text-yellow-700" },
-  { name: "Holiday", color: "bg-red-100 text-red-700" },
-];
+// Event Modal Component
+const AddEventModal = React.memo(
+  ({ isOpen, onOpenChange, onSubmit, eventTypes }: AddEventModalProps) => {
+    const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      type: "",
+      date: "",
+      time: "",
+      location: "",
+      organizer: "",
+      attendees: "",
+    });
+
+    const handleInputChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      },
+      []
+    );
+
+    const handleSelectChange = useCallback((field: string, value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }, []);
+
+    const handleSubmit = useCallback(
+      (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const newEvent: Event = {
+          id: `EVT-${String(Date.now()).slice(-3)}`,
+          ...formData,
+          attendees: parseInt(formData.attendees) || 0,
+          status: "upcoming" as const,
+        };
+
+        onSubmit(newEvent);
+
+        // Reset form
+        setFormData({
+          title: "",
+          description: "",
+          type: "",
+          date: "",
+          time: "",
+          location: "",
+          organizer: "",
+          attendees: "",
+        });
+      },
+      [formData, onSubmit]
+    );
+
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add New Event</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="title">Event Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="Enter event title"
+                  required
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Enter event description"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="type">Event Type</Label>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(value) => handleSelectChange("type", value)}
+                  >
+                    <SelectTrigger id="type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {eventTypes.map((type) => (
+                          <SelectItem key={type.name} value={type.name}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="organizer">Organizer</Label>
+                  <Input
+                    id="organizer"
+                    name="organizer"
+                    value={formData.organizer}
+                    onChange={handleInputChange}
+                    placeholder="Enter organizer"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="date">Date</Label>
+                  <Input
+                    id="date"
+                    name="date"
+                    type="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="time">Time</Label>
+                  <Input
+                    id="time"
+                    name="time"
+                    value={formData.time}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 9:00 AM - 4:00 PM"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="Enter location"
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="attendees">Expected Attendees</Label>
+                  <Input
+                    id="attendees"
+                    name="attendees"
+                    type="number"
+                    value={formData.attendees}
+                    onChange={handleInputChange}
+                    placeholder="Enter number of attendees"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Create Event</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+
+AddEventModal.displayName = "AddEventModal";
 
 export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
+  const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
 
   const upcomingEvents = events.filter((event) => event.status === "upcoming");
   const ongoingEvents = events.filter((event) => event.status === "ongoing");
@@ -108,8 +285,14 @@ export default function EventsPage() {
     return eventType?.color || "bg-gray-100 text-gray-700";
   };
 
+  const handleEventSubmit = useCallback((newEvent: Event) => {
+    setEvents((prev) => [newEvent, ...prev]);
+    setIsAddEventModalOpen(false);
+  }, []);
+
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* Existing header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Events & Activities</h1>
@@ -117,12 +300,14 @@ export default function EventsPage() {
             Manage school events and activities
           </p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button
+          className="flex items-center gap-2"
+          onClick={() => setIsAddEventModalOpen(true)}
+        >
           <PlusCircle className="h-4 w-4" />
           Add New Event
         </Button>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
@@ -277,6 +462,12 @@ export default function EventsPage() {
           </Card>
         </div>
       </div>
+      <AddEventModal
+        isOpen={isAddEventModalOpen}
+        onOpenChange={setIsAddEventModalOpen}
+        onSubmit={handleEventSubmit}
+        eventTypes={eventTypes}
+      />
     </div>
   );
 }
