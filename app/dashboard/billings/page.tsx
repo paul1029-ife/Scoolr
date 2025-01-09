@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Search,
   Download,
@@ -52,7 +60,22 @@ interface FeeStructure {
   collectedAmount: number;
 }
 
-// Sample data
+interface PaymentFormData {
+  studentName: string;
+  class: string;
+  amount: string;
+  type: string;
+  status: string;
+}
+
+interface PaymentModalProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (payment: Payment) => void;
+  feeStructure: FeeStructure[];
+}
+
+// Sample data remains the same...
 const recentPayments: Payment[] = [
   {
     id: "PAY-001",
@@ -81,7 +104,6 @@ const recentPayments: Payment[] = [
     status: "paid",
     date: "2024-01-03",
   },
-  // Add more payment records...
 ];
 
 const feeStructure: FeeStructure[] = [
@@ -99,12 +121,163 @@ const feeStructure: FeeStructure[] = [
     expectedAmount: 14375000,
     collectedAmount: 13125000,
   },
-  // Add more classes...
 ];
+
+// Separate PaymentModal component
+const PaymentModal: React.FC<PaymentModalProps> = React.memo(
+  ({ isOpen, onOpenChange, onSubmit, feeStructure }) => {
+    const [formData, setFormData] = useState<PaymentFormData>({
+      studentName: "",
+      class: "",
+      amount: "",
+      type: "School Fees",
+      status: "paid",
+    });
+
+    const handleInputChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      },
+      []
+    );
+
+    const handleSelectChange = useCallback((field: string, value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    }, []);
+
+    const handleSubmit = useCallback(
+      (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const newPayment: Payment = {
+          id: `PAY-${Date.now()}`,
+          studentName: formData.studentName,
+          class: formData.class,
+          amount: parseFloat(formData.amount),
+          type: formData.type,
+          status: formData.status,
+          date: new Date().toISOString().split("T")[0],
+        };
+
+        onSubmit(newPayment);
+
+        // Reset form
+        setFormData({
+          studentName: "",
+          class: "",
+          amount: "",
+          type: "School Fees",
+          status: "paid",
+        });
+      },
+      [formData, onSubmit]
+    );
+
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Record New Payment</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="studentName">Student Name</Label>
+                <Input
+                  id="studentName"
+                  name="studentName"
+                  value={formData.studentName}
+                  onChange={handleInputChange}
+                  placeholder="Enter student name"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="class">Class</Label>
+                <Select
+                  value={formData.class}
+                  onValueChange={(value) => handleSelectChange("class", value)}
+                >
+                  <SelectTrigger id="class">
+                    <SelectValue placeholder="Select class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {feeStructure.map((fee) => (
+                        <SelectItem key={fee.class} value={fee.class}>
+                          {fee.class}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="amount">Amount (₦)</Label>
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={handleInputChange}
+                  placeholder="Enter amount"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="status">Payment Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => handleSelectChange("status", value)}
+                >
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="paid">Paid</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Save Payment</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+
+PaymentModal.displayName = "PaymentModal";
 
 export default function BillingsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTerm, setSelectedTerm] = useState("1st Term");
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>(recentPayments);
+
+  const handlePaymentSubmit = useCallback((newPayment: Payment) => {
+    setPayments((prev) => [newPayment, ...prev]);
+    setIsPaymentModalOpen(false);
+  }, []);
 
   const totalExpected = feeStructure.reduce(
     (sum, fee) => sum + fee.expectedAmount,
@@ -116,7 +289,7 @@ export default function BillingsPage() {
   );
   const collectionRate = (totalCollected / totalExpected) * 100;
 
-  const filteredPayments = recentPayments.filter(
+  const filteredPayments = payments.filter(
     (payment) =>
       payment.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.class.toLowerCase().includes(searchTerm.toLowerCase())
@@ -136,13 +309,15 @@ export default function BillingsPage() {
             <Download className="h-4 w-4" />
             Export Report
           </Button>
-          <Button className="flex items-center gap-2">
+          <Button
+            className="flex items-center gap-2"
+            onClick={() => setIsPaymentModalOpen(true)}
+          >
             <PlusCircle className="h-4 w-4" />
             Record Payment
           </Button>
         </div>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
@@ -327,6 +502,12 @@ export default function BillingsPage() {
           </CardContent>
         </Card>
       </div>
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onOpenChange={setIsPaymentModalOpen}
+        onSubmit={handlePaymentSubmit}
+        feeStructure={feeStructure}
+      />
     </div>
   );
 }
