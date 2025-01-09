@@ -99,12 +99,12 @@ export function TakeAttendanceModal({
       <DialogTrigger asChild>
         <Button>Take Attendance</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px]">
+      <DialogContent className="sm:max-w-[800px] h-full overflow-hidden">
         <DialogHeader>
           <DialogTitle>Take Attendance</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 h-full overflow-scroll">
           <div className="flex items-center gap-4">
             <Popover>
               <PopoverTrigger asChild>
