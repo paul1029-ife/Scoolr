@@ -4,6 +4,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import ProgressProvider from "@/providers/ProgressProvider";
 
 export default function DashboardLayout({
   children,
@@ -14,10 +15,12 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <main>
-          <SidebarTrigger className="-ml-1" />
-          {children}
-        </main>
+        <ProgressProvider>
+          <main>
+            <SidebarTrigger className="-ml-1" />
+            {children}
+          </main>
+        </ProgressProvider>
       </SidebarInset>
     </SidebarProvider>
   );

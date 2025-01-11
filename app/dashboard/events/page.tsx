@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 // Sample data
 
@@ -44,7 +45,7 @@ const eventTypes = [
   { name: "Holiday", color: "bg-red-100 text-red-700" },
 ];
 
-interface Event {
+export interface Event {
   id: string;
   title: string;
   description: string;
@@ -416,10 +417,16 @@ export default function EventsPage() {
                     <span className="text-sm text-muted-foreground">
                       Organized by {event.organizer}
                     </span>
-                    <Button variant="ghost" size="sm" className="text-blue-600">
-                      View Details
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
+                    <Link href={`/dashboard/events/${event.id}`}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600"
+                      >
+                        View Details
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CardContent>
