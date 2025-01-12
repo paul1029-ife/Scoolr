@@ -35,7 +35,7 @@ interface Subject {
 
 const initialSubjects: Subject[] = [
   {
-    id: 2,
+    id: 8,
     name: "English Literature",
     department: "Humanities",
     teacher: "Mr. James Wilson",
@@ -46,7 +46,7 @@ const initialSubjects: Subject[] = [
     color: "bg-green-100",
   },
   {
-    id: 3,
+    id: 123,
     name: "Physics",
     department: "Sciences",
     teacher: "Mrs. Linda Chen",
@@ -57,7 +57,7 @@ const initialSubjects: Subject[] = [
     color: "bg-purple-100",
   },
   {
-    id: 4,
+    id: 329,
     name: "Bible Studies",
     department: "Religious Studies",
     teacher: "Rev. Michael Thomas",
