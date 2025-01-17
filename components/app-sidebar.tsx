@@ -15,6 +15,7 @@ import {
   Disc,
   GalleryVerticalEnd,
   HomeIcon,
+  PenSquareIcon,
   Shirt,
   Timer,
 } from "lucide-react";
@@ -36,6 +37,11 @@ const navigationItems = [
     title: "Students",
     url: "/dashboard/students",
     icon: <Shirt className="size-5" />,
+  },
+  {
+    title: "Teachers",
+    url: "/dashboard/teachers",
+    icon: <PenSquareIcon className="size-5" />,
   },
   {
     title: "Billings",
