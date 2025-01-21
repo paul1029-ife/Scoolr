@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
-// pages/index.tsx
+"use client";
 import Image from "next/image";
-
+import Link from "next/link";
 export default function Home() {
   return (
     <div>
       {/* Navbar */}
-      <nav className="bg-indigo-900 p-4 sticky top-0 z-50">
+      <nav className="bg-indigo-900 p-4 sticky top-0 z-50 flex justify-between items-center">
         <ul className="flex justify-center gap-8 text-white font-medium">
           <li>
             <a href="#about" className="hover:underline">
@@ -29,6 +29,9 @@ export default function Home() {
             </a>
           </li>
         </ul>
+        <Link className="px-2 py-1 bg-white text-blue-900" href="/auth/login">
+          Log in
+        </Link>
       </nav>
 
       {/* Header Section */}
