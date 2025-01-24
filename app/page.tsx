@@ -1,7 +1,8 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
+
 export default function Home() {
   return (
     <div>
@@ -29,23 +30,32 @@ export default function Home() {
             </a>
           </li>
         </ul>
-        <Link className="px-2 py-1 bg-white text-blue-900" href="/auth/login">
-          Log in
-        </Link>
+        <div className="flex gap-4">
+          <Button className="px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-100 transition duration-300">
+            Log in
+          </Button>
+          <Button className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition duration-300">
+            Sign Up
+          </Button>
+        </div>
       </nav>
 
       {/* Header Section */}
       <header
-        className="flex flex-col justify-center items-center text-center bg-cover bg-center text-white py-16 min-h-[500px]"
+        className="flex flex-col justify-center items-center text-center bg-cover bg-center text-white py-24 min-h-[500px]"
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/school.jpg')`,
         }}
       >
         <h1 className="text-5xl font-bold mb-4">Triumphant Baptist College</h1>
-        <p className="text-xl">Nurturing Excellence, Building Character</p>
+        <p className="text-xl max-w-2xl mx-auto">
+          Nurturing Excellence, Building Character. Join us in shaping the
+          future leaders of tomorrow through quality education and strong moral
+          values.
+        </p>
         <a
           href="#admissions"
-          className="mt-6 bg-yellow-500 text-black py-3 px-6 rounded-lg font-bold hover:bg-yellow-600"
+          className="mt-6 bg-yellow-500 text-black py-3 px-6 rounded-lg font-bold hover:bg-yellow-600 transition duration-300"
         >
           Enroll Now
         </a>
@@ -53,26 +63,30 @@ export default function Home() {
 
       {/* Features Section */}
       <section id="about" className="py-16 px-8 bg-gray-50">
+        <h2 className="text-3xl font-bold text-center mb-12">About Us</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <div className="p-8 bg-gray-100 rounded-lg text-center">
+          <div className="p-8 bg-white rounded-lg shadow-md text-center">
             <h3 className="text-xl font-semibold">Academic Excellence</h3>
             <p className="mt-4">
-              Comprehensive curriculum focused on developing critical thinking
-              and practical skills for future success.
+              Our comprehensive curriculum is designed to develop critical
+              thinking, creativity, and practical skills. We prepare students
+              for success in higher education and beyond.
             </p>
           </div>
-          <div className="p-8 bg-gray-100 rounded-lg text-center">
+          <div className="p-8 bg-white rounded-lg shadow-md text-center">
             <h3 className="text-xl font-semibold">Christian Values</h3>
             <p className="mt-4">
-              Strong foundation in Baptist principles while fostering respect
-              for diverse perspectives.
+              Rooted in Baptist principles, we foster a culture of respect,
+              integrity, and compassion. Our students learn to embrace diversity
+              while upholding strong moral values.
             </p>
           </div>
-          <div className="p-8 bg-gray-100 rounded-lg text-center">
+          <div className="p-8 bg-white rounded-lg shadow-md text-center">
             <h3 className="text-xl font-semibold">Holistic Development</h3>
             <p className="mt-4">
-              Balanced focus on academics, sports, arts, and character
-              development.
+              We offer a balanced approach to education, emphasizing academics,
+              sports, arts, and character development. Our goal is to nurture
+              well-rounded individuals.
             </p>
           </div>
         </div>
@@ -102,21 +116,21 @@ export default function Home() {
           What Our Students and Parents Say
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <blockquote className="p-8 bg-indigo-100 rounded-lg">
+          <blockquote className="p-8 bg-white rounded-lg shadow-md">
             <p className="italic">
               "Triumphant Baptist College has been a blessing to our family. Our
               son has grown academically and spiritually."
             </p>
             <footer className="mt-4 font-semibold">- Parent</footer>
           </blockquote>
-          <blockquote className="p-8 bg-indigo-100 rounded-lg">
+          <blockquote className="p-8 bg-white rounded-lg shadow-md">
             <p className="italic">
               "I’ve never felt more prepared for university. The teachers truly
               care about us and our future."
             </p>
             <footer className="mt-4 font-semibold">- Student</footer>
           </blockquote>
-          <blockquote className="p-8 bg-indigo-100 rounded-lg">
+          <blockquote className="p-8 bg-white rounded-lg shadow-md">
             <p className="italic">
               "The environment is safe, nurturing, and welcoming. We highly
               recommend this school!"
@@ -135,21 +149,21 @@ export default function Home() {
             alt="School Event"
             width={300}
             height={200}
-            className="rounded-lg object-contain"
+            className="rounded-lg object-cover h-48 w-full"
           />
           <Image
             src="/two.jpg"
             alt="Classroom"
             width={300}
             height={200}
-            className="rounded-lg object-contain"
+            className="rounded-lg object-cover h-48 w-full"
           />
           <Image
             src="/three.jpg"
             alt="Sports Activity"
             width={300}
             height={200}
-            className="rounded-lg object-contain"
+            className="rounded-lg object-cover h-48 w-full"
           />
         </div>
       </section>
@@ -200,11 +214,12 @@ export default function Home() {
       >
         <h2 className="text-3xl font-bold">Start Your Journey Today</h2>
         <p className="mt-4">
-          Applications are now open for the upcoming academic session.
+          Applications are now open for the upcoming academic session. Don’t
+          miss the opportunity to join a community dedicated to excellence.
         </p>
         <a
           href="#"
-          className="mt-6 inline-block bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg hover:bg-yellow-600"
+          className="mt-6 inline-block bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition duration-300"
         >
           Apply Now
         </a>
