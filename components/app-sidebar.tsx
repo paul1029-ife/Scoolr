@@ -13,7 +13,6 @@ import {
 import {
   CreditCard,
   Disc,
-  GalleryVerticalEnd,
   HomeIcon,
   PenSquareIcon,
   Shirt,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 const navigationItems = [
   {
@@ -61,9 +61,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarHeader className="flex items-center gap-2 px-4 py-2">
-        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-          <GalleryVerticalEnd className="size-4" />
-        </div>
         <h1 className="font-semibold text-lg">TBC DASHBOARD</h1>
       </SidebarHeader>
 
@@ -86,6 +83,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarRail />
+      <div className="w-full items-end justify-end flex pb-5 pr-6">
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
     </Sidebar>
   );
 }
