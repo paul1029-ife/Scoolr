@@ -27,6 +27,7 @@ import {
   Bell,
 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 
 // Sample data for charts
 const attendanceData = [
@@ -69,7 +70,15 @@ const recentActivities = [
   },
 ];
 
+function truncate(word: string | null | undefined) {
+  if (word === null) return;
+  if (word === undefined) return;
+  if (word.length >= 8) {
+    return word.slice(0, 10) + "...";
+  }
+}
 export default function DashboardPage() {
+  const { userId } = useAuth();
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header Section */}
@@ -78,7 +87,9 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold">
             Triumphant Baptist College Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">Welcome back, Admin</p>
+          <p className="text-muted-foreground mt-1">
+            Welcome back, Admin {truncate(userId)}
+          </p>
         </div>
         <Button className="flex items-center gap-2">
           <Bell className="h-4 w-4" />

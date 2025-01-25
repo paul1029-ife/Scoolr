@@ -1,8 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-
+import {
+  SignInButton,
+  SignOutButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/nextjs";
 export default function Home() {
   return (
     <div>
@@ -31,12 +35,16 @@ export default function Home() {
           </li>
         </ul>
         <div className="flex gap-4">
-          <Button className="px-4 py-2 bg-white text-blue-900 rounded-lg hover:bg-gray-100 transition duration-300">
-            Log in
-          </Button>
-          <Button className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition duration-300">
-            Sign Up
-          </Button>
+          <SignedOut>
+            <SignInButton>
+              <button className="w-full py-1 px-3 border-none rounded-md bg-red-600">
+                Log in
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <SignOutButton />
+          </SignedIn>
         </div>
       </nav>
 
@@ -55,7 +63,7 @@ export default function Home() {
         </p>
         <a
           href="#admissions"
-          className="mt-6 bg-yellow-500 text-black py-3 px-6 rounded-lg font-bold hover:bg-yellow-600 transition duration-300"
+          className="mt-6 bg-red-600 text-black py-3 px-6 rounded-lg font-bold hover:bg-red-700 transition duration-300"
         >
           Enroll Now
         </a>
@@ -219,7 +227,7 @@ export default function Home() {
         </p>
         <a
           href="#"
-          className="mt-6 inline-block bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition duration-300"
+          className="mt-6 inline-block bg-red-600 text-black font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300"
         >
           Apply Now
         </a>
