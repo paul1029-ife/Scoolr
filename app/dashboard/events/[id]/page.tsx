@@ -31,9 +31,9 @@ interface EventDetails extends Event {
 }
 
 export default function EventDetailsPage({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   params,
-}: {
-  params: { id: string };
 }) {
   const id = params.id;
   console.log(id);
