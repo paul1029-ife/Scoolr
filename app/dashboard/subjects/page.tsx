@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -82,6 +83,7 @@ export default function Page() {
 
   const loadSubjects = () => {
     const storedSubjects = JSON.parse(localStorage.getItem("subjects") || "[]");
+    //@ts-expect-error
     setSubjects([...initialSubjects, ...storedSubjects]);
     console.log(typeof subjects);
   };

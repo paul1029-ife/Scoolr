@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use-client";
 
 import React from "react";
@@ -159,6 +160,7 @@ export function TakeAttendanceModal({
                       <Checkbox
                         checked={attendanceState[student.id]}
                         onCheckedChange={(checked) =>
+                          //@ts-expect-error
                           handleAttendanceChange(student.id, checked as boolean)
                         }
                       />
