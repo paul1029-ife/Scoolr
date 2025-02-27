@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+// import { SignedIn, UserButton } from "@clerk/nextjs";
 
 const navigationItems = [
   {
@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader className="flex items-center gap-2 px-4 py-2">
+      <SidebarHeader className="flex items-start gap-2 px-4 py-2">
         <h1 className="font-semibold text-lg">TBC DASHBOARD</h1>
       </SidebarHeader>
 
@@ -69,11 +69,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu key={item.title}>
             <SidebarMenuItem>
               <SidebarMenuButton
-                className="flex w-full items-center gap-3 px-4 py-2"
+                className={`flex w-full items-center gap-3 px-4 py-2`}
                 asChild
                 isActive={pathname === item.url}
               >
-                <Link href={item.url}>
+                <Link href={item.url} className="text-2xl">
                   {item.icon}
                   <span className="font-medium">{item.title}</span>
                 </Link>
@@ -81,13 +81,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuItem>
           </SidebarMenu>
         ))}
+        {/* <div className="flex w-full items-center gap-3 px-3 py-2">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div> */}
       </SidebarContent>
       <SidebarRail />
-      <div className="w-full items-end justify-end flex pb-5 pr-6">
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </div>
     </Sidebar>
   );
 }

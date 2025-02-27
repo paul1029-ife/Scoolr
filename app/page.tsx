@@ -1,119 +1,91 @@
 "use client";
-import { useState } from "react";
 import Image from "next/image";
-import {
-  SignInButton,
-  SignOutButton,
-  SignedIn,
-  SignedOut,
-} from "@clerk/nextjs";
-import { Facebook, Instagram, Menu } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
+import Navbar from "../components/NavBar";
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
   return (
-    <div>
-      {/* Navbar */}
-      <nav className="bg-indigo-900 p-4 sticky top-0 z-50 flex justify-between items-center shadow-lg">
-        <button
-          className="md:hidden text-white hover:text-gray-300 transition duration-300"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <Menu />
-        </button>
-        <ul
-          className={`${
-            menuOpen ? "block" : "hidden"
-          } md:flex justify-center gap-8 text-white font-medium`}
-        >
-          <li>
-            <a
-              href="#about"
-              className="hover:underline hover:text-gray-300 transition duration-300"
-            >
-              About
-            </a>
-          </li>
-          <li>
-            <a
-              href="#academics"
-              className="hover:underline hover:text-gray-300 transition duration-300"
-            >
-              Academics
-            </a>
-          </li>
-          <li>
+    <div className="min-h-screen">
+      <Navbar />
+
+      {/* Hero Section */}
+      <header className="relative flex items-center justify-center min-h-screen">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <Image
+            src="/school.jpg"
+            alt="School Campus"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/50" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            Triumphant Baptist College
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Nurturing Excellence, Building Character. Join us in shaping the
+            future leaders of tomorrow through quality education and strong
+            moral values.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#admissions"
-              className="hover:underline hover:text-gray-300 transition duration-300"
+              className="px-8 py-4 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition duration-300 transform hover:scale-105"
             >
-              Admissions
+              Apply Now
             </a>
-          </li>
-          <li>
             <a
-              href="#contact"
-              className="hover:underline hover:text-gray-300 transition duration-300"
+              href="#about"
+              className="px-8 py-4 bg-white text-gray-900 rounded-lg font-bold hover:bg-gray-100 transition duration-300 transform hover:scale-105"
             >
-              Contact
+              Learn More
             </a>
-          </li>
-        </ul>
-        <div className="flex gap-4">
-          <SignedOut>
-            <SignInButton>
-              <button className="py-2 px-4 border-none rounded-md bg-red-600 text-white hover:bg-red-700 transition duration-300">
-                Log in
-              </button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <SignOutButton />
-          </SignedIn>
+          </div>
         </div>
-      </nav>
-
-      {/* Header Section */}
-      <header
-        className="flex flex-col justify-center items-center text-center bg-cover bg-center text-white py-32 min-h-[600px]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0)), url('/school.jpg')`,
-        }}
-      >
-        <h1 className="text-5xl md:text-6xl font-bold mb-6">
-          Triumphant Baptist College
-        </h1>
-        <p className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed">
-          Nurturing Excellence, Building Character. Join us in shaping the
-          future leaders of tomorrow through quality education and strong moral
-          values.
-        </p>
-        <a
-          href="#admissions"
-          className="mt-8 bg-red-600 text-white py-3 px-8 rounded-lg font-bold hover:bg-red-700 transition duration-300"
-        >
-          Enroll Now
-        </a>
       </header>
 
       {/* Features Section */}
-      <section id="about" className="py-20 px-6 md:px-8 bg-gray-50">
-        <h2 className="text-4xl font-bold text-center mb-16">About Us</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {[
-            "Academic Excellence",
-            "Christian Values",
-            "Holistic Development",
-          ].map((title, index) => (
-            <div
-              key={index}
-              className="p-8 bg-white rounded-lg shadow-lg text-center hover:shadow-xl transition-shadow duration-300"
-            >
-              <h3 className="text-2xl font-semibold mb-4">{title}</h3>
-              <p className="text-gray-600">Description of {title} goes here.</p>
-            </div>
-          ))}
+      <section id="about" className="py-24 px-6 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-16">
+            Why Choose Us
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                title: "Academic Excellence",
+                description:
+                  "Our rigorous curriculum and dedicated faculty ensure students receive the highest quality education.",
+              },
+              {
+                title: "Christian Values",
+                description:
+                  "We integrate faith and learning, fostering spiritual growth alongside academic achievement.",
+              },
+              {
+                title: "Holistic Development",
+                description:
+                  "Beyond academics, we focus on character building, leadership skills, and personal growth.",
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="p-8 bg-gray-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+              >
+                <h3 className="text-2xl font-semibold mb-4 text-gray-900">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
