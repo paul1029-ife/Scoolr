@@ -8,9 +8,7 @@ export default function Home() {
     <div className="min-h-screen">
       <Navbar />
 
-      {/* Hero Section */}
       <header className="relative flex items-center justify-center min-h-screen">
-        {/* Background Image with Overlay */}
         <div className="absolute inset-0">
           <Image
             src="/school.jpg"

@@ -77,6 +77,7 @@ function truncate(word: string | null | undefined) {
     return word.slice(0, 10) + "...";
   }
 }
+
 export default function DashboardPage() {
   const { userId } = useAuth();
   return (
@@ -84,7 +85,7 @@ export default function DashboardPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-semibold">
             Triumphant Baptist College Dashboard
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -98,15 +99,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Users className="h-6 w-6 text-blue-700" />
+            <div className="p-3 rounded-full">
+              <Users className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Students</p>
-              <p className="text-2xl font-bold">1,234</p>
+              <p className="text-md">Total Students</p>
+              <p className="text-2xl font-semibold">1,234</p>
               <p className="text-sm text-green-600">+5% from last term</p>
             </div>
           </CardContent>
@@ -114,12 +115,12 @@ export default function DashboardPage() {
 
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 bg-green-100 rounded-full">
-              <GraduationCap className="h-6 w-6 text-green-700" />
+            <div className="p-3 rounded-full">
+              <GraduationCap className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Teachers</p>
-              <p className="text-2xl font-bold">98</p>
+              <p className="text-md">Total Teachers</p>
+              <p className="text-2xl font-semibold">98</p>
               <p className="text-sm text-green-600">+2 new this term</p>
             </div>
           </CardContent>
@@ -127,27 +128,25 @@ export default function DashboardPage() {
 
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 bg-purple-100 rounded-full">
-              <Clock className="h-6 w-6 text-purple-700" />
+            <div className="p-3 rounded-full">
+              <Clock className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">
-                Average Attendance
-              </p>
-              <p className="text-2xl font-bold">95%</p>
-              <p className="text-sm text-green-600">+2% this week</p>
+              <p className="text-md">Average Attendance</p>
+              <p className="text-2xl font-semibold">95%</p>
+              <p className="text-sm">+2% this week</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <TrendingUp className="h-6 w-6 text-yellow-700" />
+            <div className="p-3 rounded-full">
+              <TrendingUp className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Fee Collection</p>
-              <p className="text-2xl font-bold">92%</p>
+              <p className="text-md">Fee Collection</p>
+              <p className="text-2xl font-semibold">92%</p>
               <p className="text-sm text-yellow-600">₦15M outstanding</p>
             </div>
           </CardContent>
@@ -286,7 +285,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="font-medium">{activity.title}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-lg">
                         {new Date(activity.date).toLocaleDateString()}
                       </p>
                     </div>
