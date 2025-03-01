@@ -69,7 +69,7 @@ export function AppSidebar({ isCollapsed, setIsCollapsed }: AppSidebarProps) {
     <aside
       className={cn(
         "fixed top-0 left-0 bottom-0 z-50",
-        "flex flex-col border-r border-gray-100 bg-gray-50 transition-all duration-200 ease-in-out",
+        "flex flex-col border-r border-gray-100 bg-gray-50 transition-all duration-200 ease-in-out overflow-hidden",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -116,14 +116,14 @@ export function AppSidebar({ isCollapsed, setIsCollapsed }: AppSidebarProps) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto py-4">
+      <div className="flex-1 overflow-hidden py-4">
         {!isCollapsed && (
           <div className="mb-2 px-4 text-xs font-semibold uppercase text-gray-500">
             Main
           </div>
         )}
 
-        <nav>
+        <nav className="overflow-hidden">
           {primaryNavigation.map((item) => {
             const isActive = item.exact
               ? pathname === item.url

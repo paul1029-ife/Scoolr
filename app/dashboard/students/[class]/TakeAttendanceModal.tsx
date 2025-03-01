@@ -98,7 +98,7 @@ export function TakeAttendanceModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>Take Attendance</Button>
+        <Button className="bg-blue-600">Take Attendance</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] h-full overflow-hidden">
         <DialogHeader>

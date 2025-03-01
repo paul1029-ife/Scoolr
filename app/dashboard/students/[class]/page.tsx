@@ -123,7 +123,7 @@ export default function ClassPage({ params }: ClassPageProps) {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-gray-100">
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Registration No.</TableHead>
