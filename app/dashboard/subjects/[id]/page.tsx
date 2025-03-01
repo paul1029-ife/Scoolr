@@ -16,11 +16,10 @@ import {
   Edit,
 } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
-export default function Page({
-  //@ts-expect-error
-  params,
-}) {
+export default function Page() {
+  const params = useParams<{ id: string }>();
   const subject = {
     id: 2,
     name: "English Literature",
@@ -45,7 +44,10 @@ export default function Page({
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6" key={params.id}>
+    <div
+      className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 bg-gray-100"
+      key={params.id}
+    >
       <div className="flex items-center gap-4 mb-6">
         <Link href="/dashboard/subjects">
           <Button variant="ghost" size="icon">
@@ -53,10 +55,12 @@ export default function Page({
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold">{subject.name}</h1>
-          <p className="text-muted-foreground">Subject Details</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            {subject.name}
+          </h1>
+          <p className="text-md text-muted-foreground">Subject Details</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2 bg-blue-600">
           <Edit className="h-4 w-4" />
           Edit Subject
         </Button>
