@@ -81,29 +81,29 @@ function truncate(word: string | null | undefined) {
 export default function DashboardPage() {
   const { userId } = useAuth();
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 bg-gray-100">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-semibold">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             Triumphant Baptist College Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Welcome back, Admin {truncate(userId)}
           </p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2 bg-blue-600">
           <Bell className="h-4 w-4" />
           Notifications
         </Button>
       </div>
 
       {/* Quick Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="p-3 rounded-full">
-              <Users className="h-6 w-6" />
+              <Users className="h-6 w-6 text-gray-600" />
             </div>
             <div>
               <p className="text-md">Total Students</p>
@@ -116,7 +116,7 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="p-3 rounded-full">
-              <GraduationCap className="h-6 w-6" />
+              <GraduationCap className="h-6 w-6 text-gray-600" />
             </div>
             <div>
               <p className="text-md">Total Teachers</p>
@@ -129,10 +129,10 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="p-3 rounded-full">
-              <Clock className="h-6 w-6" />
+              <Clock className="h-6 w-6 text-gray-600" />
             </div>
             <div>
-              <p className="text-md">Average Attendance</p>
+              <p className="text-md">Attendance</p>
               <p className="text-2xl font-semibold">95%</p>
               <p className="text-sm">+2% this week</p>
             </div>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <div className="p-3 rounded-full">
-              <TrendingUp className="h-6 w-6" />
+              <TrendingUp className="h-6 w-6 text-gray-600" />
             </div>
             <div>
               <p className="text-md">Fee Collection</p>

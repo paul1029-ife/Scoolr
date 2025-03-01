@@ -18,11 +18,16 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface AppSidebarProps {
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
 const primaryNavigation = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: <Home className="h-5 w-5" />,
+    exact: true,
   },
   {
     title: "Subjects",
@@ -55,8 +60,7 @@ const secondaryNavigation = [
   },
 ];
 
-export function AppSidebar() {
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
+export function AppSidebar({ isCollapsed, setIsCollapsed }: AppSidebarProps) {
   const pathname = usePathname();
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
@@ -64,7 +68,8 @@ export function AppSidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col h-screen border-r border-gray-100 bg-gray-50 transition-all duration-200 ease-in-out relative",
+        "fixed top-0 left-0 bottom-0 z-50",
+        "flex flex-col border-r border-gray-100 bg-gray-50 transition-all duration-200 ease-in-out overflow-hidden",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -111,16 +116,18 @@ export function AppSidebar() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto py-4">
+      <div className="flex-1 overflow-hidden py-4">
         {!isCollapsed && (
           <div className="mb-2 px-4 text-xs font-semibold uppercase text-gray-500">
             Main
           </div>
         )}
 
-        <nav>
+        <nav className="overflow-hidden">
           {primaryNavigation.map((item) => {
-            const isActive = pathname === item.url;
+            const isActive = item.exact
+              ? pathname === item.url
+              : pathname.startsWith(item.url);
             return (
               <div key={item.title} className="relative group">
                 <Link
@@ -146,7 +153,7 @@ export function AppSidebar() {
                     <div className="flex flex-1 items-center justify-between">
                       <span className="font-medium">{item.title}</span>
                       {item.badge && (
-                        <span className="ml-auto text-xs font-normal bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                        <span className="ml-auto text-xs font-normal bg-yellow-100 text-gray-600 px-2 py-0.5 rounded-full">
                           {item.badge}
                         </span>
                       )}
@@ -155,11 +162,11 @@ export function AppSidebar() {
                 </Link>
 
                 {isCollapsed && item.badge && (
-                  <span className="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-blue-600 rounded-full"></span>
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-600 rounded-full"></span>
                 )}
 
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 top-0 w-auto p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                  <div className="absolute left-full ml-2 top-0 w-auto p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                     <div className="whitespace-nowrap">
                       <p className="font-medium">{item.title}</p>
                       {item.badge && (
@@ -181,9 +188,9 @@ export function AppSidebar() {
           </div>
         )}
 
-        <nav className={isCollapsed ? "mt-6" : ""}>
+        <nav className={isCollapsed ? "mt-4" : ""}>
           {secondaryNavigation.map((item) => {
-            const isActive = pathname === item.url;
+            const isActive = pathname.startsWith(item.url);
             return (
               <div key={item.title} className="relative group">
                 <Link
@@ -212,7 +219,7 @@ export function AppSidebar() {
                 </Link>
 
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 top-0 w-auto p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                  <div className="absolute left-full ml-2 top-0 w-auto p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                     <p className="whitespace-nowrap font-medium">
                       {item.title}
                     </p>
@@ -224,7 +231,6 @@ export function AppSidebar() {
         </nav>
       </div>
 
-      {/* Footer */}
       <div className="border-t border-gray-200 p-4">
         <div
           className={cn(
@@ -251,7 +257,7 @@ export function AppSidebar() {
             )}
 
             {isCollapsed && (
-              <div className="absolute left-full ml-2 bottom-0 w-auto p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <div className="absolute left-full ml-2 bottom-0 w-auto p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="whitespace-nowrap">
                   <p className="font-medium">Admin User</p>
                   <p className="text-xs text-gray-500">admin@example.com</p>
@@ -260,30 +266,54 @@ export function AppSidebar() {
             )}
           </div>
 
-          {!isCollapsed && (
-            <div className="flex space-x-1">
-              <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
-                <User className="h-4 w-4" />
-                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  Profile
-                </span>
-              </button>
+          <div
+            className={cn(
+              "flex",
+              isCollapsed ? "flex-col gap-2" : "flex-row gap-1"
+            )}
+          >
+            <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
+              <User className="h-4 w-4" />
+              <span
+                className={cn(
+                  "absolute px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all",
+                  isCollapsed
+                    ? "left-full ml-2 top-1/2 -translate-y-1/2"
+                    : "bottom-full mb-2 left-1/2 -translate-x-1/2"
+                )}
+              >
+                Profile
+              </span>
+            </button>
 
-              <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
-                <Settings className="h-4 w-4" />
-                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  Settings
-                </span>
-              </button>
+            <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
+              <Settings className="h-4 w-4" />
+              <span
+                className={cn(
+                  "absolute px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all",
+                  isCollapsed
+                    ? "left-full ml-2 top-1/2 -translate-y-1/2"
+                    : "bottom-full mb-2 left-1/2 -translate-x-1/2"
+                )}
+              >
+                Settings
+              </span>
+            </button>
 
-              <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
-                <LogOut className="h-4 w-4" />
-                <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                  Logout
-                </span>
-              </button>
-            </div>
-          )}
+            <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
+              <LogOut className="h-4 w-4" />
+              <span
+                className={cn(
+                  "absolute px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all",
+                  isCollapsed
+                    ? "left-full ml-2 top-1/2 -translate-y-1/2"
+                    : "bottom-full mb-2 left-1/2 -translate-x-1/2"
+                )}
+              >
+                Logout
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </aside>

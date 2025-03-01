@@ -25,14 +25,11 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { studentsData } from "./data";
 import { AddStudentModal, Student } from "./AddStudentModal";
+import { useParams } from "next/navigation";
 
-interface ClassPageProps {
-  params: {
-    class: string;
-  };
-}
-
-export default function ClassPage({ params }: ClassPageProps) {
+export default function ClassPage() {
+  const params = useParams<{ class: string }>();
+  console.log("Params", params);
   const [students, setStudents] = useState(studentsData);
   const [searchTerm, setSearchTerm] = useState("");
   const className = params.class.replace("-", " ").toUpperCase();
@@ -74,7 +71,7 @@ export default function ClassPage({ params }: ClassPageProps) {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 bg-gray-100">
       <div className="flex items-center gap-4 mb-6">
         <Link href="/dashboard/students">
           <Button variant="ghost" size="icon">
@@ -82,8 +79,12 @@ export default function ClassPage({ params }: ClassPageProps) {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold">{className}</h1>
-          <p className="text-muted-foreground">Student List & Attendance</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            {className}
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Student List & Attendance
+          </p>
         </div>
         <Button variant="outline" className="flex items-center gap-2">
           <Download className="h-4 w-4" />
@@ -119,7 +120,7 @@ export default function ClassPage({ params }: ClassPageProps) {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-gray-100">
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Registration No.</TableHead>

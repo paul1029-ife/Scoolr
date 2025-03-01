@@ -188,7 +188,7 @@ export function AddStudentModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2 bg-blue-600">
           <UserPlus className="h-4 w-4" />
           Add New Student
         </Button>
