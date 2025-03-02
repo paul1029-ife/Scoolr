@@ -49,6 +49,15 @@ export function TeachersProvider({ children }: { children: React.ReactNode }) {
       email: "musa.i@school.edu.ng",
       status: "on leave",
     },
+    {
+      id: "4",
+      name: "Mr. David Amusan",
+      subject: "Biology",
+      classAssigned: "SSS 2",
+      phoneNumber: "+234 823 312 7890",
+      email: "david.i@school.edu.ng",
+      status: "active",
+    },
   ]);
 
   const [searchQuery, setSearchQuery] = useState("");

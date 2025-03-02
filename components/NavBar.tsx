@@ -22,15 +22,16 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { href: "#about", label: "About" },
-    { href: "#academics", label: "Academics" },
-    { href: "#admissions", label: "Admissions" },
+    { href: "#features", label: "Features" },
+    { href: "#pricing", label: "Pricing" },
+    { href: "#testimonials", label: "Success Stories" },
+    { href: "#demo", label: "Request Demo" },
     { href: "#contact", label: "Contact" },
   ];
 
   return (
     <nav
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+      className={`fixed w-full top-0 z-50 transition-all duration-75 ${
         scrolled
           ? "bg-white text-gray-800 shadow-lg"
           : "bg-transparent text-white"
@@ -39,8 +40,12 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <Link href="/" className="text-2xl font-bold">
-              TBC
+            <Link href="/" className="text-4xl font-bold text-white">
+              <span className="text-blue-600">S</span>
+              <span className={`${!scrolled ? "text-white" : "text-gray-900"}`}>
+                cool
+              </span>
+              <span className="text-indigo-400">r</span>
             </Link>
           </div>
 
@@ -50,7 +55,7 @@ const Navbar = () => {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium hover:text-red-500 transition duration-300"
+                className="text-sm font-medium hover:text-blue-500 transition duration-300"
               >
                 {link.label}
               </a>
@@ -58,7 +63,7 @@ const Navbar = () => {
             <div className="ml-4">
               <SignedOut>
                 <SignInButton>
-                  <button className="py-2 px-4 rounded-md bg-red-600 text-white hover:bg-red-700 transition duration-300">
+                  <button className="py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
                     Log in
                   </button>
                 </SignInButton>
@@ -91,7 +96,7 @@ const Navbar = () => {
               <a
                 key={link.href}
                 href={link.href}
-                className="block px-3 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-red-500 transition duration-300"
+                className="block px-3 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-blue-500 transition duration-300"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
@@ -100,7 +105,7 @@ const Navbar = () => {
             <div className="px-3 py-2">
               <SignedOut>
                 <SignInButton>
-                  <button className="w-full py-2 px-4 rounded-md bg-red-600 text-white hover:bg-red-700 transition duration-300">
+                  <button className="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
                     Log in
                   </button>
                 </SignInButton>
