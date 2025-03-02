@@ -38,17 +38,9 @@ function TeachersPageContent() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 bg-gray-100">
-      {/* Header with Add Teacher Button */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Teachers Management
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Add, edit, and manage faculty members
-          </p>
-        </div>
+    <div className="mx-auto space-y-8">
+      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
+        <h1 className="text-md font-medium tracking-tight">Manage Teachers</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -67,23 +59,24 @@ function TeachersPageContent() {
         </Dialog>
       </div>
 
-      {/* Stats Section with improved visual design */}
-      <div className="mb-8">
-        <TeacherStats />
-      </div>
-
-      {/* Search and Filters with better spacing */}
-      <div className="mb-6">
-        <SearchFilters />
-      </div>
-
-      {/* Teachers Table Card */}
-      <Card className="border-0 shadow-sm overflow-hidden rounded-lg">
-        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">All Teachers</h2>
+      <div className="px-3">
+        <div className="mb-8">
+          <TeacherStats />
         </div>
-        <TeachersTable onEdit={handleEdit} />
-      </Card>
+
+        {/* Search and Filters with better spacing */}
+        <div className="mb-6">
+          <SearchFilters />
+        </div>
+
+        {/* Teachers Table Card */}
+        <Card className="border-0 shadow-sm overflow-hidden rounded-lg">
+          <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">All Teachers</h2>
+          </div>
+          <TeachersTable onEdit={handleEdit} />
+        </Card>
+      </div>
     </div>
   );
 }

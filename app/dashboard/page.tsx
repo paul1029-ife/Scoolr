@@ -145,7 +145,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader className="border-b">
-              <h2 className="text-md bg-gray-900">Attendance Trends</h2>
+              <h2 className="text-md text-gray-900">Attendance Trends</h2>
             </CardHeader>
             <CardContent className="p-6">
               <div className="h-[300px]">
@@ -169,7 +169,7 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader className="border-b">
-              <h2 className="text-md bg-gray-900">
+              <h2 className="text-md text-gray-900">
                 Fee Collection (in millions ₦)
               </h2>
             </CardHeader>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           {/* Quick Links */}
           <Card>
             <CardHeader className="border-b">
-              <h2 className="text-md bg-gray-900">Quick Links</h2>
+              <h2 className="text-md text-gray-900">Quick Links</h2>
             </CardHeader>
             <CardContent className="p-4">
               <div className="grid grid-cols-1 gap-2">
@@ -242,7 +242,7 @@ export default function DashboardPage() {
           {/* Recent Activities */}
           <Card className="lg:col-span-2">
             <CardHeader className="border-b">
-              <h2 className="text-md bg-gray-900">Recent Activities</h2>
+              <h2 className="text-md text-gray-900">Recent Activities</h2>
             </CardHeader>
             <CardContent className="p-4">
               <div className="space-y-4">

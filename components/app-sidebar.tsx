@@ -328,7 +328,7 @@ export function AppSidebar({
       </aside>
       <main
         className={cn(
-          "flex-1 transition-all bg-gray-50 m-3 rounded-3xl",
+          "flex-1 transition-all bg-gray-50 m-3 rounded-3xl pb-3",
           isCollapsed ? "ml-16" : "ml-64"
         )}
       >
