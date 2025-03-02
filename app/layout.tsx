@@ -14,9 +14,42 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TBC dashboard",
+  title: "Scoolr",
   description:
-    "Triumphant baptist college dashboard app to handle school operations.",
+    "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
+  keywords: [
+    "school management",
+    "education platform",
+    "student management",
+    "teacher tools",
+    "finance tracking",
+  ],
+  authors: {
+    name: "Paul Agbogun",
+    url: "https://ifeoluwa-portfolio-five.vercel.app",
+  },
+  openGraph: {
+    title: "Scoolr",
+    description:
+      "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
+    url: "https://scoolr.vercel.app",
+    type: "website",
+    images: [
+      {
+        url: "https://scoolr.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Scoolr Dashboard Preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Scoolr",
+    description:
+      "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
+    images: ["https://scoolr.vercel.app/twitter-image.jpg"],
+  },
 };
 
 export default function RootLayout({
