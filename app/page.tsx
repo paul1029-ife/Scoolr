@@ -38,8 +38,8 @@ export default function Home() {
 
         {/* Content */}
         <div className="container relative z-10 px-4 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
-          <div className="text-left max-w-2xl mb-12 md:mb-0">
-            <div className="inline-block px-3 py-1 bg-blue-500/60 rounded-full text-blue-50 text-sm font-medium mb-6">
+          <div className="text-left max-w-2xl mb-12 mt-16 md:mt-0 md:mb-0">
+            <div className="inline-block px-3 py-1 bg-blue-500/60 rounded-full text-blue-50 text-sm font-medium mb-3">
               All-in-one School Management Platform
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">

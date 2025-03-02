@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://scoolr.vercel.app"),
   title: "Scoolr",
   description:
     "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://scoolr.vercel.app/og-image.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Scoolr Dashboard Preview",
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
     title: "Scoolr",
     description:
       "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
-    images: ["https://scoolr.vercel.app/twitter-image.jpg"],
+    images: ["https://scoolr.vercel.app/og-image.png"],
   },
 };
 
