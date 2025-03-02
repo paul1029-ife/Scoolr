@@ -102,7 +102,7 @@ export default function Page() {
       <div className="px-3">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-4 md:p-6">
               <div className="p-3 bg-blue-100 rounded-full">
                 <Users className="h-5 w-5 text-blue-700" />
@@ -116,7 +116,7 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-4 md:p-6">
               <div className="p-3 bg-green-100 rounded-full">
                 <School className="h-5 w-5 text-green-700" />
@@ -130,7 +130,7 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-4 md:p-6">
               <div className="p-3 bg-purple-100 rounded-full">
                 <GraduationCap className="h-5 w-5 text-purple-700" />

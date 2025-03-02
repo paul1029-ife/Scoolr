@@ -39,7 +39,7 @@ export function TeacherStats() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
       {stats.map((stat) => (
-        <Card key={stat.title} className="border-0 shadow-sm">
+        <Card key={stat.title} className="border-0 shadow-sm bg-gray-100">
           <CardContent className="flex items-center gap-4 p-4 md:p-6">
             <div className={`p-3 rounded-full ${stat.bgColor}`}>
               {stat.icon}

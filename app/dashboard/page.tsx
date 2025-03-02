@@ -88,52 +88,60 @@ export default function DashboardPage() {
       <div className="px-3 flex flex-col gap-3">
         {/* Quick Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          <Card>
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="p-3 bg-green-100 rounded-full">
                 <Users className="h-5 w-5 text-green-700" />
               </div>
               <div>
-                <p className="text-md text-gray-800">Total Students</p>
-                <p className="text-xl ">1,234</p>
+                <p className="text-md font-medium text-muted-foreground">
+                  Total Students
+                </p>
+                <p className="text-2xl ">1,234</p>
                 <p className="text-sm text-green-600">+5% from last term</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="p-3 bg-indigo-100 rounded-full">
                 <GraduationCap className="h-6 w-6 text-indigo-600" />
               </div>
               <div>
-                <p className="text-md text-gray-800">Total Teachers</p>
+                <p className="text-md font-medium text-muted-foreground">
+                  Total Teachers
+                </p>
                 <p className="text-2xl ">98</p>
                 <p className="text-sm text-green-600">+2 new this term</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="p-3 bg-purple-100 rounded-full">
                 <Clock className="h-5 w-5 text-purple-700" />
               </div>
               <div>
-                <p className="text-md text-gray-800">Attendance</p>
+                <p className="text-md font-medium text-muted-foreground">
+                  Attendance
+                </p>
                 <p className="text-2xl ">95%</p>
                 <p className="text-sm">+2% this week</p>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-0 shadow-sm bg-gray-100">
             <CardContent className="flex items-center gap-4 p-6">
               <div className="p-3 bg-blue-100 rounded-full">
                 <TrendingUp className="h-5 w-5 text-blue-700" />
               </div>
               <div>
-                <p className="text-md text-gray-800">Fee Collection</p>
+                <p className="text-md font-medium text-muted-foreground">
+                  Fee Collection
+                </p>
                 <p className="text-2xl ">92%</p>
                 <p className="text-sm text-yellow-600">₦15M outstanding</p>
               </div>

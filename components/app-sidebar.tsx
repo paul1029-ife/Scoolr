@@ -11,10 +11,10 @@ import {
   Shirt,
   Timer,
   Settings,
-  ChevronLeft,
-  ChevronRight,
   User,
   LogOut,
+  ChevronsRight,
+  ChevronsLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -112,13 +112,13 @@ export function AppSidebar({
 
           <button
             onClick={toggleCollapse}
-            className="text-gray-500 hover:text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="text-gray-600 bg-gray-50 border-2 hover:text-gray-700 rounded-md focus:outline-none "
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? (
-              <ChevronRight className="h-5 w-5" />
+              <ChevronsRight className="h-5 w-5" />
             ) : (
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronsLeft className="h-5 w-5" />
             )}
           </button>
         </div>
@@ -142,8 +142,8 @@ export function AppSidebar({
                     className={cn(
                       "flex items-center gap-3 px-4 py-2 my-1 mx-2 rounded-md transition-colors",
                       isActive
-                        ? "text-gray-800 border-2 border-gray-100 bg-gray-300"
-                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                        ? "text-gray-900 border-2 border-gray-100 bg-gray-300"
+                        : "text-gray-600 hover:text-gray-700 hover:bg-gray-200"
                     )}
                   >
                     <span
@@ -207,8 +207,8 @@ export function AppSidebar({
                     className={cn(
                       "flex items-center gap-3 px-4 py-2 my-1 mx-2 rounded-md transition-colors",
                       isActive
-                        ? "text-gray-800 border-2 border-gray-100 bg-gray-300"
-                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                        ? "text-gray-900 border-2 border-gray-100 bg-gray-300"
+                        : "text-gray-600 hover:text-gray-700 hover:bg-gray-100"
                     )}
                   >
                     <span
@@ -328,7 +328,7 @@ export function AppSidebar({
       </aside>
       <main
         className={cn(
-          "flex-1 transition-all bg-gray-50 m-3 rounded-3xl pb-3",
+          "flex-1 transition-all bg-white m-3 rounded-3xl pb-3",
           isCollapsed ? "ml-16" : "ml-64"
         )}
       >
