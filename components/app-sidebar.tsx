@@ -94,7 +94,7 @@ export function AppSidebar({
                   <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" fill="white" />
                 </svg>
               </div>
-              <h1 className="font-semibold text-lg">TBC ADMIN</h1>
+              <h1 className="font-semibold text-lg">Scoolr</h1>
             </div>
           ) : (
             <div className="mx-auto rounded-md bg-blue-600 p-1">
