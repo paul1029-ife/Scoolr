@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
         alt: "Scoolr Dashboard Preview",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     title: "Scoolr",
     description:
       "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
-    images: ["https://scoolr.vercel.app/og-image.png"],
+    images: ["/images/og-image.png"],
   },
 };
 
