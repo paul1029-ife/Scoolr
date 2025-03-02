@@ -17,8 +17,10 @@ import {
   BarChart,
 } from "lucide-react";
 import Navbar from "../components/NavBar";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -294,7 +296,10 @@ export default function Home() {
       </section>
 
       {/* Testimonial Section */}
-      <section className="py-24 px-4 bg-gradient-to-b from-blue-50 to-white">
+      <section
+        id="testimonials"
+        className="py-24 px-4 bg-gradient-to-b from-blue-50 to-white"
+      >
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
@@ -365,7 +370,7 @@ export default function Home() {
         </div>
       </section>
       {/* How It Works Section */}
-      <section className="py-24 px-4 bg-white">
+      <section id="demo" className="py-24 px-4 bg-white">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
@@ -520,8 +525,8 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href="#contact"
+                <button
+                  onClick={() => router.push("/signup")}
                   className={`w-full py-3 px-4 rounded-lg font-medium text-center block ${
                     plan.highlighted
                       ? "bg-blue-600 text-white hover:bg-blue-700"
@@ -529,7 +534,7 @@ export default function Home() {
                   } transition duration-300`}
                 >
                   {plan.price === "Custom" ? "Contact Sales" : "Get Started"}
-                </a>
+                </button>
               </div>
             ))}
           </div>
