@@ -27,7 +27,6 @@ import {
   Bell,
 } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
 
 // Sample data for charts
 const attendanceData = [
@@ -70,27 +69,15 @@ const recentActivities = [
   },
 ];
 
-function truncate(word: string | null | undefined) {
-  if (word === null) return;
-  if (word === undefined) return;
-  if (word.length >= 8) {
-    return word.slice(0, 10) + "...";
-  }
-}
-
 export default function DashboardPage() {
-  const { userId } = useAuth();
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 bg-gray-100">
+    <div className="mx-auto space-y-8">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Triumphant Baptist College Dashboard
+          <h1 className="text-md text-gray-800 font-medium tracking-tight">
+            Overview
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Welcome back, Admin {truncate(userId)}
-          </p>
         </div>
         <Button className="flex items-center gap-2 bg-blue-600">
           <Bell className="h-4 w-4" />
@@ -98,212 +85,214 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      {/* Quick Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 rounded-full">
-              <Users className="h-6 w-6 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-md">Total Students</p>
-              <p className="text-2xl font-semibold">1,234</p>
-              <p className="text-sm text-green-600">+5% from last term</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="px-3 flex flex-col gap-3">
+        {/* Quick Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <Card>
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="p-3 bg-green-100 rounded-full">
+                <Users className="h-5 w-5 text-green-700" />
+              </div>
+              <div>
+                <p className="text-md text-gray-800">Total Students</p>
+                <p className="text-xl ">1,234</p>
+                <p className="text-sm text-green-600">+5% from last term</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 rounded-full">
-              <GraduationCap className="h-6 w-6 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-md">Total Teachers</p>
-              <p className="text-2xl font-semibold">98</p>
-              <p className="text-sm text-green-600">+2 new this term</p>
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="p-3 bg-indigo-100 rounded-full">
+                <GraduationCap className="h-6 w-6 text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-md text-gray-800">Total Teachers</p>
+                <p className="text-2xl ">98</p>
+                <p className="text-sm text-green-600">+2 new this term</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 rounded-full">
-              <Clock className="h-6 w-6 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-md">Attendance</p>
-              <p className="text-2xl font-semibold">95%</p>
-              <p className="text-sm">+2% this week</p>
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="p-3 bg-purple-100 rounded-full">
+                <Clock className="h-5 w-5 text-purple-700" />
+              </div>
+              <div>
+                <p className="text-md text-gray-800">Attendance</p>
+                <p className="text-2xl ">95%</p>
+                <p className="text-sm">+2% this week</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="p-3 rounded-full">
-              <TrendingUp className="h-6 w-6 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-md">Fee Collection</p>
-              <p className="text-2xl font-semibold">92%</p>
-              <p className="text-sm text-yellow-600">₦15M outstanding</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <Card>
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="p-3 bg-blue-100 rounded-full">
+                <TrendingUp className="h-5 w-5 text-blue-700" />
+              </div>
+              <div>
+                <p className="text-md text-gray-800">Fee Collection</p>
+                <p className="text-2xl ">92%</p>
+                <p className="text-sm text-yellow-600">₦15M outstanding</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="border-b">
-            <h2 className="text-xl font-semibold">Attendance Trends</h2>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={attendanceData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis domain={[85, 100]} />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey="attendance"
-                    stroke="#2563eb"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader className="border-b">
+              <h2 className="text-md bg-gray-900">Attendance Trends</h2>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={attendanceData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis domain={[85, 100]} />
+                    <Tooltip />
+                    <Line
+                      type="monotone"
+                      dataKey="attendance"
+                      stroke="#2563eb"
+                      strokeWidth={2}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="border-b">
-            <h2 className="text-xl font-semibold">
-              Fee Collection (in millions ₦)
-            </h2>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={feeCollectionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="expected" fill="#94a3b8" />
-                  <Bar dataKey="collected" fill="#2563eb" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <Card>
+            <CardHeader className="border-b">
+              <h2 className="text-md bg-gray-900">
+                Fee Collection (in millions ₦)
+              </h2>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={feeCollectionData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="expected" fill="#94a3b8" />
+                    <Bar dataKey="collected" fill="#2563eb" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* Bottom Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Links */}
-        <Card>
-          <CardHeader className="border-b">
-            <h2 className="text-xl font-semibold">Quick Links</h2>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 gap-2">
-              <Link href="/dashboard/students">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between hover:bg-gray-100"
-                >
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Manage Students
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/dashboard/subjects">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between hover:bg-gray-100"
-                >
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    Manage Subjects
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/dashboard/billing">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between hover:bg-gray-100"
-                >
-                  <div className="flex items-center gap-2">
-                    <Receipt className="h-4 w-4" />
-                    Fee Management
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activities */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="border-b">
-            <h2 className="text-xl font-semibold">Recent Activities</h2>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 ${
-                        activity.type === "event"
-                          ? "bg-purple-100"
-                          : "bg-green-100"
-                      } rounded-full`}
-                    >
-                      {activity.type === "event" ? (
-                        <CalendarDays
-                          className={`h-4 w-4 ${
-                            activity.type === "event"
-                              ? "text-purple-700"
-                              : "text-green-700"
-                          }`}
-                        />
-                      ) : (
-                        <Receipt className="h-4 w-4 text-green-700" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium">{activity.title}</p>
-                      <p className="text-lg">
-                        {new Date(activity.date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <Badge
-                    className={
-                      activity.status === "upcoming"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-green-100 text-green-700"
-                    }
+        {/* Bottom Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Quick Links */}
+          <Card>
+            <CardHeader className="border-b">
+              <h2 className="text-md bg-gray-900">Quick Links</h2>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 gap-2">
+                <Link href="/dashboard/students">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between hover:bg-gray-100"
                   >
-                    {activity.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      Manage Students
+                    </div>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/dashboard/subjects">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between hover:bg-gray-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" />
+                      Manage Subjects
+                    </div>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/dashboard/billing">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-between hover:bg-gray-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Receipt className="h-4 w-4" />
+                      Fee Management
+                    </div>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Activities */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="border-b">
+              <h2 className="text-md bg-gray-900">Recent Activities</h2>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                {recentActivities.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`p-2 ${
+                          activity.type === "event"
+                            ? "bg-purple-100"
+                            : "bg-green-100"
+                        } rounded-full`}
+                      >
+                        {activity.type === "event" ? (
+                          <CalendarDays
+                            className={`h-4 w-4 ${
+                              activity.type === "event"
+                                ? "text-purple-700"
+                                : "text-green-700"
+                            }`}
+                          />
+                        ) : (
+                          <Receipt className="h-4 w-4 text-green-700" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium">{activity.title}</p>
+                        <p className="text-lg">
+                          {new Date(activity.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge
+                      className={
+                        activity.status === "upcoming"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-green-100 text-green-700"
+                      }
+                    >
+                      {activity.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
