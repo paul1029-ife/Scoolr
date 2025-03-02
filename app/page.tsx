@@ -220,10 +220,10 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center gap-16 mb-20">
             <div className="md:w-1/2 relative h-96 w-full rounded-xl overflow-hidden shadow-lg order-2 md:order-1">
               <Image
-                src="/financial-dashboard.png"
+                src="/dashboard-mockup.png"
                 alt="Financial Dashboard"
                 fill
-                className="object-cover object-center"
+                className="object-contain md:object-cover  object-center"
               />
             </div>
             <div className="md:w-1/2 order-1 md:order-2">
@@ -286,7 +286,7 @@ export default function Home() {
                 src="/financial-dashboard.png"
                 alt="Student Management"
                 fill
-                className="object-cover object-center"
+                className="object-contain md:object-cover"
               />
             </div>
           </div>
