@@ -48,7 +48,7 @@ export function TeacherStats() {
               <p className="text-md font-medium text-muted-foreground">
                 {stat.title}
               </p>
-              <p className="text-2xl font-bold">{stat.value}</p>
+              <p className="text-2xl">{stat.value}</p>
             </div>
           </CardContent>
         </Card>
