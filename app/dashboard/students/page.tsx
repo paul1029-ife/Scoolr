@@ -111,7 +111,7 @@ export default function Page() {
                 <p className="text-md font-medium text-muted-foreground">
                   Total Students
                 </p>
-                <p className="text-2xl font-bold">{totalStudents}</p>
+                <p className="text-2xl">{totalStudents}</p>
               </div>
             </CardContent>
           </Card>
@@ -125,7 +125,7 @@ export default function Page() {
                 <p className="text-md font-medium text-muted-foreground">
                   Total Classes
                 </p>
-                <p className="text-2xl font-bold">{allClasses.length}</p>
+                <p className="text-2xl">{allClasses.length}</p>
               </div>
             </CardContent>
           </Card>
@@ -139,7 +139,7 @@ export default function Page() {
                 <p className="text-md font-medium text-muted-foreground">
                   Average Attendance
                 </p>
-                <p className="text-2xl font-bold">{averageAttendance}%</p>
+                <p className="text-2xl">{averageAttendance}%</p>
               </div>
             </CardContent>
           </Card>

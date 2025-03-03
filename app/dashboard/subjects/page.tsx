@@ -168,7 +168,7 @@ export default function Page() {
                 <p className="text-md font-medium text-muted-foreground">
                   Total Subjects
                 </p>
-                <p className="text-2xl font-medium">{subjects.length}</p>
+                <p className="text-2xl">{subjects.length}</p>
               </div>
             </CardContent>
           </Card>
@@ -182,7 +182,7 @@ export default function Page() {
                 <p className="text-md font-medium text-muted-foreground">
                   Total Teachers
                 </p>
-                <p className="text-2xl font-medium">
+                <p className="text-2xl">
                   {new Set(subjects.map((s: Subject) => s.teacher)).size}
                 </p>
               </div>
@@ -198,7 +198,7 @@ export default function Page() {
                 <p className="text-md font-medium text-muted-foreground">
                   Active Classes
                 </p>
-                <p className="text-2xl font-medium">{subjects.length * 2}</p>
+                <p className="text-2xl">{subjects.length * 2}</p>
               </div>
             </CardContent>
           </Card>
