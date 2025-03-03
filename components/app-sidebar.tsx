@@ -17,6 +17,7 @@ import {
   ChevronsLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SignOutButton } from "@clerk/nextjs";
 
 interface AppSidebarProps {
   isCollapsed: boolean;
@@ -249,7 +250,7 @@ export function AppSidebar({
           >
             <div
               className={cn(
-                "flex items-center gap-3 cursor-pointer relative group",
+                "flex items-center gap-3 relative group",
                 isCollapsed ? "" : "w-full"
               )}
             >
@@ -259,9 +260,6 @@ export function AppSidebar({
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">Admin User</p>
-                  <p className="truncate text-xs text-gray-500">
-                    admin@example.com
-                  </p>
                 </div>
               )}
 
@@ -269,7 +267,6 @@ export function AppSidebar({
                 <div className="absolute left-full ml-2 bottom-0 w-max p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                   <div className="whitespace-nowrap">
                     <p className="font-medium">Admin User</p>
-                    <p className="text-xs text-gray-500">admin@example.com</p>
                   </div>
                 </div>
               )}
@@ -309,7 +306,7 @@ export function AppSidebar({
                 </span>
               </button>
 
-              <button className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
+              <div className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
                 <LogOut className="h-4 w-4" />
                 <span
                   className={cn(
@@ -319,9 +316,9 @@ export function AppSidebar({
                       : "bottom-full mb-2 left-1/2 -translate-x-1/2"
                   )}
                 >
-                  Logout
+                  <SignOutButton />
                 </span>
-              </button>
+              </div>
             </div>
           </div>
         </div>

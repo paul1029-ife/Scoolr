@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,6 +12,9 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  Legend,
+  Area,
+  AreaChart,
 } from "recharts";
 import {
   Users,
@@ -28,8 +29,31 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// Type definitions
+type AttendanceData = {
+  month: string;
+  attendance: number;
+};
+
+type FeeCollectionData = {
+  month: string;
+  expected: number;
+  collected: number;
+};
+
+type ActivityType = "event" | "payment";
+type ActivityStatus = "upcoming" | "completed";
+
+type RecentActivity = {
+  id: number;
+  title: string;
+  type: ActivityType;
+  date: string;
+  status: ActivityStatus;
+};
+
 // Sample data for charts
-const attendanceData = [
+const attendanceData: AttendanceData[] = [
   { month: "Sep", attendance: 95 },
   { month: "Oct", attendance: 93 },
   { month: "Nov", attendance: 96 },
@@ -37,7 +61,7 @@ const attendanceData = [
   { month: "Jan", attendance: 95 },
 ];
 
-const feeCollectionData = [
+const feeCollectionData: FeeCollectionData[] = [
   { month: "Sep", expected: 150, collected: 142 },
   { month: "Oct", expected: 150, collected: 145 },
   { month: "Nov", expected: 150, collected: 148 },
@@ -45,7 +69,7 @@ const feeCollectionData = [
   { month: "Jan", expected: 150, collected: 147 },
 ];
 
-const recentActivities = [
+const recentActivities: RecentActivity[] = [
   {
     id: 1,
     title: "Parent-Teacher Meeting",
@@ -69,7 +93,51 @@ const recentActivities = [
   },
 ];
 
-export default function DashboardPage() {
+// Custom tooltip components with proper typing
+interface CustomTooltipProps {
+  active?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload?: any[];
+  label?: string;
+}
+
+const AttendanceTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 border rounded shadow-md">
+        <p className="font-medium">{`${label}`}</p>
+        <p className="text-blue-600">{`Attendance: ${payload[0].value}%`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const FeeTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 border rounded shadow-md">
+        <p className="font-medium">{`${label}`}</p>
+        <p className="text-gray-600">{`Expected: ₦${payload[0].value}M`}</p>
+        <p className="text-blue-600">{`Collected: ₦${payload[1].value}M`}</p>
+        <p className="text-orange-500">{`Gap: ₦${(
+          payload[0].value - payload[1].value
+        ).toFixed(1)}M`}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function DashboardPage(): React.ReactNode {
   return (
     <div className="mx-auto space-y-8">
       {/* Header Section */}
@@ -158,18 +226,51 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={attendanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[85, 100]} />
-                    <Tooltip />
-                    <Line
+                  <AreaChart
+                    data={attendanceData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="attendanceGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.1}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#f0f0f0"
+                    />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} />
+                    <YAxis
+                      domain={[85, 100]}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip content={<AttendanceTooltip />} />
+                    <Area
                       type="monotone"
                       dataKey="attendance"
-                      stroke="#2563eb"
-                      strokeWidth={2}
+                      stroke="#3b82f6"
+                      strokeWidth={3}
+                      fill="url(#attendanceGradient)"
+                      activeDot={{ r: 6 }}
                     />
-                  </LineChart>
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
@@ -184,13 +285,37 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={feeCollectionData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="expected" fill="#94a3b8" />
-                    <Bar dataKey="collected" fill="#2563eb" />
+                  <BarChart
+                    data={feeCollectionData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#f0f0f0"
+                    />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} />
+                    <YAxis axisLine={false} tickLine={false} />
+                    <Tooltip content={<FeeTooltip />} />
+                    <Legend
+                      verticalAlign="top"
+                      height={36}
+                      wrapperStyle={{ paddingBottom: "10px" }}
+                    />
+                    <Bar
+                      dataKey="expected"
+                      fill="#94a3b8"
+                      radius={[4, 4, 0, 0]}
+                      barSize={20}
+                      name="Expected"
+                    />
+                    <Bar
+                      dataKey="collected"
+                      fill="#3b82f6"
+                      radius={[4, 4, 0, 0]}
+                      barSize={20}
+                      name="Collected"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
