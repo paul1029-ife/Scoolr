@@ -542,7 +542,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 px-4 bg-white">
+      <section id="contact" className="py-24 px-4 bg-white">
         <div className="container max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium mb-4">
