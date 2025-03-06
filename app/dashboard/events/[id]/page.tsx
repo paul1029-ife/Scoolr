@@ -90,82 +90,89 @@ export default function EventDetailsPage({
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center gap-2 text-sm">
-        <Link href="/dashboard/events">
-          <Button variant="ghost" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Events
-          </Button>
-        </Link>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{eventDetails.title}</h1>
-          <p className="text-muted-foreground mt-1">
-            Organised by {eventDetails.organizer}
-          </p>
+    <div className="container mx-auto space-y-8 max-w-7xl">
+      {/* Header Section */}
+      <div className="border-b px-4 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-3 items-center justify-between z-10">
+        <div className="flex justify-center items-center gap-2">
+          <Link href="/dashboard/events">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-md text-gray-800 font-medium tracking-tight">
+            {eventDetails.title}
+          </h1>
         </div>
+
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="flex items-center gap-2">
             <Share2 className="h-4 w-4" />
             Share
           </Button>
-          <Button className="gap-2">
+          <Button className="flex items-center gap-2 bg-blue-600">
             <Edit className="h-4 w-4" />
             Edit Event
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4">
+        {/* Left Column (2/3 width on large screens) */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
+          <Card className="bg-gray-100 shadow-sm">
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div>
                   <div className="flex gap-2 mb-4">
-                    <Badge>{eventDetails.status.toUpperCase()}</Badge>
+                    <Badge>{eventDetails.status}</Badge>
                     <Badge variant="outline">{eventDetails.term}</Badge>
                     <Badge variant="outline">{eventDetails.class}</Badge>
                   </div>
-                  <p className="text-lg">{eventDetails.description}</p>
+                  <p className="text-lg text-muted-foreground">
+                    {eventDetails.description}
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Calendar className="h-5 w-5 text-blue-700" />
+                    </div>
                     <div>
-                      <p className="font-medium">Date</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">Date</p>
+                      <p className="font-medium">
                         {new Date(eventDetails.date).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-yellow-100 rounded-lg">
+                      <Clock className="h-5 w-5 text-yellow-700" />
+                    </div>
                     <div>
-                      <p className="font-medium">Time</p>
-                      <p className="text-sm text-muted-foreground">
-                        {eventDetails.time}
-                      </p>
+                      <p className="text-sm text-muted-foreground">Time</p>
+                      <p className="font-medium">{eventDetails.time}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <MapPin className="h-5 w-5 text-green-700" />
+                    </div>
                     <div>
-                      <p className="font-medium">Venue</p>
-                      <p className="text-sm text-muted-foreground">
-                        {eventDetails.location}
-                      </p>
+                      <p className="text-sm text-muted-foreground">Venue</p>
+                      <p className="font-medium">{eventDetails.location}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <Users className="h-5 w-5 text-purple-700" />
+                    </div>
                     <div>
-                      <p className="font-medium">Expected Attendance</p>
                       <p className="text-sm text-muted-foreground">
+                        Expected Attendance
+                      </p>
+                      <p className="font-medium">
                         {eventDetails.attendees} people
                       </p>
                     </div>
@@ -175,15 +182,17 @@ export default function EventDetailsPage({
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <h2 className="text-xl font-semibold">Programme of Events</h2>
+          <Card className="bg-gray-100 shadow-sm">
+            <CardHeader className="border-b pb-3">
+              <h2 className="text-xl">Programme of Events</h2>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-4">
                 {eventDetails.programme.map((item, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="w-2 h-2 mt-2 rounded-full bg-blue-600" />
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="p-1 bg-gray-200 rounded-full mt-1">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                    </div>
                     <p>{item}</p>
                   </div>
                 ))}
@@ -192,12 +201,13 @@ export default function EventDetailsPage({
           </Card>
         </div>
 
+        {/* Right Column (1/3 width on large screens) */}
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <h2 className="text-xl font-semibold">Staff in Charge</h2>
+          <Card className="bg-gray-100 shadow-sm">
+            <CardHeader className="border-b pb-3">
+              <h2 className="text-xl">Staff in Charge</h2>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-4">
                 {eventDetails.staff.map((person) => (
                   <div key={person.id} className="flex items-center gap-3">
@@ -218,11 +228,11 @@ export default function EventDetailsPage({
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <h2 className="text-xl font-semibold">Materials</h2>
+          <Card className="bg-gray-100 shadow-sm">
+            <CardHeader className="border-b pb-3">
+              <h2 className="text-xl">Materials</h2>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-2">
                 {eventDetails.materials.map((material, index) => (
                   <Button

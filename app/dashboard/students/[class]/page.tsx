@@ -71,30 +71,30 @@ export default function ClassPage() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 bg-gray-100">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/students">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+    <div key={params.class} className="mx-auto space-y-8">
+      {/* Header Section */}
+      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
+        <div className="flex justify-center items-center gap-2">
+          <Link href="/dashboard/students">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-md text-gray-800 font-medium tracking-tight">
             {className}
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Student List & Attendance
-          </p>
         </div>
-        <Button variant="outline" className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
-          Export List
-        </Button>
-        <AddStudentModal onAddStudent={handleAddStudent} />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Download className="h-4 w-4" />
+            Export List
+          </Button>
+          <AddStudentModal onAddStudent={handleAddStudent} />
+        </div>
       </div>
 
-      <Card>
-        <CardHeader className="border-b">
+      <Card className="mx-3 bg-gray-100">
+        <CardHeader className="border-b ">
           <div className="flex flex-col md:flex-row gap-4 justify-between">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -120,7 +120,7 @@ export default function ClassPage() {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-gray-100">
+              <TableHeader className="bg-white">
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Registration No.</TableHead>
