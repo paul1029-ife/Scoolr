@@ -16,7 +16,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://scoolr.vercel.app"),
+  metadataBase: new URL("https://scoolr.vercel.app/"),
   title: "Scoolr",
   description:
     "The complete platform that empowers secondary schools to effortlessly manage staff, students, finances, and events.",
