@@ -17,7 +17,7 @@ import {
   ChevronsLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SignOutButton } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 
 interface AppSidebarProps {
   isCollapsed: boolean;
@@ -69,6 +69,7 @@ export function AppSidebar({
   children,
 }: AppSidebarProps) {
   const pathname = usePathname();
+  const { signOut } = useClerk();
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
@@ -306,18 +307,12 @@ export function AppSidebar({
                 </span>
               </button>
 
-              <div className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative">
+              <div
+                onClick={() => signOut()}
+                className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors group relative cursor-pointer"
+              >
                 <LogOut className="h-4 w-4" />
-                <span
-                  className={cn(
-                    "absolute px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50",
-                    isCollapsed
-                      ? "left-full ml-2 top-1/2 -translate-y-1/2"
-                      : "bottom-full mb-2 left-1/2 -translate-x-1/2"
-                  )}
-                >
-                  <SignOutButton />
-                </span>
+                <span className="sr-only">Sign out</span>
               </div>
             </div>
           </div>

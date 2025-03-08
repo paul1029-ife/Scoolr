@@ -61,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignOutUrl={""} signInUrl="/login" signUpUrl="/signup">
+    <ClerkProvider afterSignOutUrl={"/"} signInUrl="/login" signUpUrl="/signup">
       <html lang="en">
         <body
           className={`${inter.variable} ${jakarta.variable} font-primary antialiased`}

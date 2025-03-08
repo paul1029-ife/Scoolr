@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Calendar,
@@ -14,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Event } from "../page";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 interface Staff {
   id: string;
   name: string;
@@ -30,12 +32,8 @@ interface EventDetails extends Event {
   term: string;
 }
 
-export default function EventDetailsPage({
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-expect-error
-  params,
-}) {
-  const id = params.id;
+export default function EventDetailsPage() {
+  const { id } = useParams();
   console.log(id);
   const eventDetails: EventDetails = {
     id: "1",
@@ -120,7 +118,7 @@ export default function EventDetailsPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4">
         {/* Left Column (2/3 width on large screens) */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-gray-100 shadow-sm">
+          <Card className="hover:shadow-md transition-shadow border-gray-100">
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div>
@@ -182,7 +180,7 @@ export default function EventDetailsPage({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-100 shadow-sm">
+          <Card className="hover:shadow-md transition-shadow border-gray-100">
             <CardHeader className="border-b pb-3">
               <h2 className="text-xl">Programme of Events</h2>
             </CardHeader>
@@ -203,7 +201,7 @@ export default function EventDetailsPage({
 
         {/* Right Column (1/3 width on large screens) */}
         <div className="space-y-6">
-          <Card className="bg-gray-100 shadow-sm">
+          <Card className="hover:shadow-md transition-shadow border-gray-100">
             <CardHeader className="border-b pb-3">
               <h2 className="text-xl">Staff in Charge</h2>
             </CardHeader>
@@ -228,7 +226,7 @@ export default function EventDetailsPage({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-100 shadow-sm">
+          <Card className="hover:shadow-md transition-shadow border-gray-100">
             <CardHeader className="border-b pb-3">
               <h2 className="text-xl">Materials</h2>
             </CardHeader>

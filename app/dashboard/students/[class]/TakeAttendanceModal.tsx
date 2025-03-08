@@ -163,6 +163,7 @@ export function TakeAttendanceModal({
                           //@ts-expect-error
                           handleAttendanceChange(student.id, checked as boolean)
                         }
+                        className="bg-blue-600"
                       />
                     </TableCell>
                   </TableRow>
@@ -175,7 +176,9 @@ export function TakeAttendanceModal({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit}>Save Attendance</Button>
+            <Button className="bg-blue-600" onClick={handleSubmit}>
+              Save Attendance
+            </Button>
           </div>
         </div>
       </DialogContent>
