@@ -17,10 +17,24 @@ import {
   BarChart,
 } from "lucide-react";
 import Navbar from "../components/NavBar";
+import { useAuth } from "@clerk/nextjs";
+import "./globals.css";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-
 export default function Home() {
   const router = useRouter();
+  const { sessionId } = useAuth();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (sessionId) {
+        router.push("/dashboard");
+      } else {
+        return;
+      }
+    };
+    checkAuth();
+  }, [sessionId]);
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
