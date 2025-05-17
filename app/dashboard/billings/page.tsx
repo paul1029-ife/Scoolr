@@ -25,9 +25,6 @@ import {
   Search,
   Download,
   PlusCircle,
-  Wallet,
-  TrendingUp,
-  BellRing,
   ChevronUp,
   ChevronDown,
   Receipt,
@@ -40,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SimpleCard from "@/components/common/simple-card";
 
 // Types
 interface Payment {
@@ -333,51 +331,20 @@ export default function BillingsPage() {
       </div>
       <div className="px-3">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Wallet className="h-6 w-6 text-blue-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Collected
-                </p>
-                <p className="text-2xl">
-                  ₦{(totalCollected / 1000000).toFixed(1)}M
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="p-3 bg-green-100 rounded-full">
-                <TrendingUp className="h-6 w-6 text-green-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Collection Rate
-                </p>
-                <p className="text-2xl">{collectionRate.toFixed(1)}%</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <BellRing className="h-6 w-6 text-yellow-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Outstanding
-                </p>
-                <p className="text-2xl">
-                  ₦{((totalExpected - totalCollected) / 1000000).toFixed(1)}M
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <SimpleCard
+            title="Total Collected"
+            value={`₦${(totalCollected / 1000000).toFixed(1)}M`}
+          />
+          <SimpleCard
+            title="Collection Rate"
+            value={`${collectionRate.toFixed(1)}%`}
+          />
+          <SimpleCard
+            title="Outstanding"
+            value={` ₦${((totalExpected - totalCollected) / 1000000).toFixed(
+              1
+            )}M`}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
