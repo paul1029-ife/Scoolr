@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     "finance tracking",
   ],
   authors: {
-    name: "Paul Agbogun",
-    url: "https://ifeoluwa-portfolio-five.vercel.app",
+    name: "Paul Ifeoluwa Agbogun",
+    url: "https://ifeoluwa.tech",
   },
   openGraph: {
     title: "Scoolr",
@@ -61,7 +61,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignOutUrl={"/"} signInUrl="/login" signUpUrl="/signup">
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      afterSignOutUrl={"/"}
+      signInUrl="/login"
+      signUpUrl="/signup"
+    >
       <html lang="en">
         <body
           className={`${inter.variable} ${jakarta.variable} font-primary antialiased`}
