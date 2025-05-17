@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -89,10 +90,8 @@ const recentActivities: RecentActivity[] = [
   },
 ];
 
-// Custom tooltip components with proper typing
 interface CustomTooltipProps {
   active?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload?: any[];
   label?: string;
 }
@@ -106,7 +105,7 @@ const AttendanceTooltip: React.FC<CustomTooltipProps> = ({
     return (
       <div className="bg-white p-3 border rounded shadow-md">
         <p className="font-medium">{`${label}`}</p>
-        <p className="text-blue-600">{`Attendance: ${payload[0].amount}%`}</p>
+        <p className="text-blue-600">{`Attendance: ${payload[0].value}%`}</p>
       </div>
     );
   }
@@ -122,10 +121,10 @@ const FeeTooltip: React.FC<CustomTooltipProps> = ({
     return (
       <div className="bg-white p-3 border rounded shadow-md">
         <p className="font-medium">{`${label}`}</p>
-        <p className="text-gray-600">{`Expected: ₦${payload[0].amount}M`}</p>
-        <p className="text-blue-600">{`Collected: ₦${payload[1].amount}M`}</p>
+        <p className="text-gray-600">{`Expected: ₦${payload[0].value}M`}</p>
+        <p className="text-blue-600">{`Collected: ₦${payload[1].value}M`}</p>
         <p className="text-orange-500">{`Gap: ₦${(
-          payload[0].amount - payload[1].amount
+          payload[0].value - payload[1].value
         ).toFixed(1)}M`}</p>
       </div>
     );
@@ -151,7 +150,7 @@ export default function DashboardPage(): React.ReactNode {
 
       <div className="px-3 flex flex-col gap-3">
         {/* Quick Stats Section */}
-        <div className="*:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card lg:px-6">
+        <div className="*:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card">
           <StatCard
             trending={true}
             amount="1,340"
