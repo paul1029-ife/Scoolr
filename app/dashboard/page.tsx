@@ -26,7 +26,7 @@ import {
   Bell,
 } from "lucide-react";
 import Link from "next/link";
-import StatCard from "@/components/common/StatCard";
+import StatCard from "@/components/common/stat-card";
 
 type AttendanceData = {
   month: string;
@@ -121,7 +121,7 @@ const FeeTooltip: React.FC<CustomTooltipProps> = ({
     return (
       <div className="bg-white p-3 border rounded shadow-md">
         <p className="font-medium">{`${label}`}</p>
-        <p className="text-gray-600">{`Expected: ₦${payload[0].value}M`}</p>
+        <p className="text-gray-900">{`Expected: ₦${payload[0].value}M`}</p>
         <p className="text-blue-600">{`Collected: ₦${payload[1].value}M`}</p>
         <p className="text-orange-500">{`Gap: ₦${(
           payload[0].value - payload[1].value

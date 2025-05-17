@@ -5,16 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Search,
-  Users,
-  GraduationCap,
-  School,
-  Filter,
-  BookOpen,
-  TrendingDown,
-} from "lucide-react";
+import { Search, Filter, BookOpen } from "lucide-react";
 import Link from "next/link";
+import SimpleCard from "@/components/common/simple-card";
 
 interface ClassData {
   name: string;
@@ -103,89 +96,12 @@ export default function Page() {
       <div className="px-3">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="h-5 w-5 text-blue-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Students
-                </p>
-                <p className="text-2xl">{totalStudents}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="pt-5 p-3 shadow-lg rounded-2xl border bg-white">
-            <CardContent className="flex flex-col gap-4">
-              {/* Earnings Info & Chart */}
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 flex-grow">
-                <div className="space-y-1 text-center sm:text-left">
-                  <p className="text-md text-gray-500">Total Teachers</p>
-                  <h2 className="text-xl font-medium tracking-tight text-gray-900">
-                    27
-                  </h2>
-                </div>
-
-                {/* Chart */}
-                <div className="w-24 h-20">
-                  <svg viewBox="0 0 100 40" className="w-full h-full">
-                    <defs>
-                      <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
-                        <stop
-                          offset="0%"
-                          stopColor="#3b82f6"
-                          stopOpacity="0.3"
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor="#ffffff"
-                          stopOpacity="0.2"
-                        />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M 0 35 C 20 25 40 30 60 20 S 100 10 100 15"
-                      fill="none"
-                      stroke="#3b82f6"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M 0 35 C 20 25 40 30 60 20 S 100 10 100 15 L 100 40 L 0 40 Z"
-                      fill="url(#gradient)"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Subtext Beneath */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 -mt-2">
-                <div className="flex items-center bg-red-100 text-red-600 text-xs font-medium px-2 py-1 rounded-full w-fit">
-                  <TrendingDown className="w-4 h-4 mr-1" />
-                  25%
-                </div>
-                <span className="text-sm text-gray-500">
-                  Less than last week
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-purple-100 rounded-full">
-                <GraduationCap className="h-5 w-5 text-purple-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Average Attendance
-                </p>
-                <p className="text-2xl">{averageAttendance}%</p>
-              </div>
-            </CardContent>
-          </Card>
+          <SimpleCard title="Total Students" value={`${totalStudents}`} />
+          <SimpleCard title="Total Classes" value="20" />
+          <SimpleCard
+            title="Average Attendance"
+            value={`${averageAttendance}%`}
+          />
         </div>
 
         {/* Search and Filter */}
