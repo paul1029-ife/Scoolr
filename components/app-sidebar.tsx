@@ -74,7 +74,7 @@ export function AppSidebar({
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200">
+    <div className="flex min-h-screen bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300">
       <aside
         className={cn(
           "fixed top-0 left-0 bottom-0 z-50",
@@ -144,7 +144,7 @@ export function AppSidebar({
                     className={cn(
                       "flex items-center gap-3 px-4 py-2 my-1 mx-2 rounded-md transition-colors",
                       isActive
-                        ? "text-gray-900 border-2 border-gray-100 bg-gray-300"
+                        ? "text-gray-900  bg-gray-300"
                         : "text-gray-600 hover:text-gray-700 hover:bg-gray-200"
                     )}
                   >
@@ -209,7 +209,7 @@ export function AppSidebar({
                     className={cn(
                       "flex items-center gap-3 px-4 py-2 my-1 mx-2 rounded-md transition-colors",
                       isActive
-                        ? "text-gray-900 border-2 border-gray-100 bg-gray-300"
+                        ? "text-gray-900  bg-gray-300"
                         : "text-gray-600 hover:text-gray-700 hover:bg-gray-200"
                     )}
                   >

@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import SimpleCard from "@/components/common/simple-card";
 
 // Event types with consistent color scheme
 const eventTypes = [
@@ -375,53 +376,20 @@ export default function EventsPage() {
       </div>
 
       <div className="px-4 space-y-6">
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-blue-50 rounded-full">
-                <Calendar className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Upcoming Events
-                </p>
-                <p className="text-2xl">{upcomingEvents.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-green-50 rounded-full">
-                <Clock className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Ongoing Events
-                </p>
-                <p className="text-2xl">{ongoingEvents.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-purple-50 rounded-full">
-                <Users className="h-6 w-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Participants
-                </p>
-                <p className="text-2xl">
-                  {events.reduce((sum, event) => sum + event.attendees, 0)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <SimpleCard
+            title="Upcoming Events"
+            value={`${upcomingEvents.length}`}
+          />
+          <SimpleCard
+            title="Ongoing Events"
+            value={`${ongoingEvents.length}`}
+          />
+          <SimpleCard
+            title="Total Participants"
+            value={`${events.reduce((sum, event) => sum + event.attendees, 0)}`}
+          />
         </div>
-
         {/* Search and Filter */}
         <div className="flex flex-col md:flex-row gap-5 pt-1">
           <div className="relative flex-1">

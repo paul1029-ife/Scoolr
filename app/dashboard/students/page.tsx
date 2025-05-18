@@ -5,15 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Search,
-  Users,
-  GraduationCap,
-  School,
-  Filter,
-  BookOpen,
-} from "lucide-react";
+import { Search, Filter, BookOpen } from "lucide-react";
 import Link from "next/link";
+import SimpleCard from "@/components/common/simple-card";
 
 interface ClassData {
   name: string;
@@ -101,48 +95,13 @@ export default function Page() {
 
       <div className="px-3">
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="h-5 w-5 text-blue-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Students
-                </p>
-                <p className="text-2xl">{totalStudents}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-green-100 rounded-full">
-                <School className="h-5 w-5 text-green-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Classes
-                </p>
-                <p className="text-2xl">{allClasses.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-purple-100 rounded-full">
-                <GraduationCap className="h-5 w-5 text-purple-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Average Attendance
-                </p>
-                <p className="text-2xl">{averageAttendance}%</p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+          <SimpleCard title="Total Students" value={`${totalStudents}`} />
+          <SimpleCard title="Total Classes" value="20" />
+          <SimpleCard
+            title="Average Attendance"
+            value={`${averageAttendance}%`}
+          />
         </div>
 
         {/* Search and Filter */}

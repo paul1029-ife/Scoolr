@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Search,
-  BookOpen,
   Users,
   Clock,
   Filter,
@@ -29,6 +28,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import AddSubjectModal from "./AddSubjectModal";
 import Link from "next/link";
+import SimpleCard from "@/components/common/simple-card";
 
 interface Subject {
   id: number;
@@ -159,49 +159,12 @@ export default function Page() {
       <div className="px-3">
         {/* Stats cards with more emphasis */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <BookOpen className="h-5 w-5 text-blue-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Subjects
-                </p>
-                <p className="text-2xl">{subjects.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-green-100 rounded-full">
-                <Users className="h-5 w-5 text-green-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Total Teachers
-                </p>
-                <p className="text-2xl">
-                  {new Set(subjects.map((s: Subject) => s.teacher)).size}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-sm bg-gray-100">
-            <CardContent className="flex items-center gap-4 p-4 md:p-6">
-              <div className="p-3 bg-purple-100 rounded-full">
-                <Clock className="h-5 w-5 text-purple-700" />
-              </div>
-              <div>
-                <p className="text-md font-medium text-muted-foreground">
-                  Active Classes
-                </p>
-                <p className="text-2xl">{subjects.length * 2}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <SimpleCard title="Total Subjects" value={`${subjects.length}`} />
+          <SimpleCard
+            title="Total Teachers"
+            value={`${new Set(subjects.map((s: Subject) => s.teacher)).size}`}
+          />
+          <SimpleCard title="Active classes" value={`${subjects.length * 2}`} />
         </div>
 
         {/* Improved search and filter */}
