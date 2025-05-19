@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Scoolr 🎓
 
-## Getting Started
+Scoolr is an open source modern school management system built with **Next.js**, **Supabase**, and **Clerk** for authentication. It streamlines administration, class management, and user access control in educational institutions — from student records to teacher dashboards.
 
-First, run the development server:
+## 🚀 Features
+
+- 🔐 Authentication & User Management (powered by Clerk)
+- 🏫 Role-based Dashboards (Students, Teachers, Admins)
+- 📚 Course & Subject Management
+- 📅 Timetable & Scheduling Support
+- 📝 Assignment and Grading System
+- 📊 Analytics & Reporting (Attendance, Performance)
+- 📦 Backend powered by Supabase (PostgreSQL + Auth + Storage)
+- ⚡ Built with Next.js App Router and API Routes
+
+## 🛠️ Tech Stack
+
+- [Next.js](https://nextjs.org/)
+- [Supabase](https://supabase.com/)
+- [Clerk](https://clerk.dev/)
+- Tailwind CSS for styling
+- React Hook Form + Zod for validation
+- Shadcn UI for components
+- Tanstack query for global state manangement
+
+## 📂 Project Structure
+
+```
+scoolr/
+├── app/                # Next.js app directory
+│   ├── dashboard/      # Role-based dashboard pages
+│   ├── auth/           # Auth pages (login/signup)
+│   └── api/            # API routes (Supabase + custom logic)
+├── components/         # Shared UI components
+├── lib/                # Supabase and Clerk clients
+├── types/              # TypeScript types
+├── utils/              # Helper functions
+├── styles/             # Global styles
+├── middleware.ts       # Clerk auth middleware
+└── README.md
+```
+
+## ⚙️ Getting Started
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/yourusername/scoolr.git
+cd scoolr
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env.local` file and fill in the following:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+```
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000` to see it in action.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧪 Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Basic testing can be done through the UI. You can also write integration and unit tests using Jest or Vitest (not yet included).
 
-## Learn More
+## 📌 Roadmap
 
-To learn more about Next.js, take a look at the following resources:
+- [ ] Notification system for events & announcements
+- [ ] Mobile-responsive improvements
+- [ ] Parent/Guardian Portal (development)
+- [ ] Offline support with PWA (development)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧑‍💻 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pull requests are welcome. For major changes, please open an issue first to discuss your ideas.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with ❤️ by Ifeoluwa Agbogun
