@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import StatCard from "@/components/common/stat-card";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 type AttendanceData = {
   month: string;
@@ -133,8 +142,35 @@ const FeeTooltip: React.FC<CustomTooltipProps> = ({
 };
 
 export default function DashboardPage(): React.ReactNode {
+  const [showDevAlert, setShowDevAlert] = useState(false);
+
+  useEffect(() => {
+    const hasSeenAlert = localStorage.getItem("hasSeenDevAlert");
+    if (!hasSeenAlert) {
+      setShowDevAlert(true);
+      localStorage.setItem("hasSeenDevAlert", "true");
+    }
+  }, []);
+
   return (
     <div className="mx-auto space-y-8">
+      <AlertDialog open={showDevAlert} onOpenChange={setShowDevAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>🚧 Development Status</AlertDialogTitle>
+            <AlertDialogDescription>
+              Welcome to the TBC Dashboard! This application is currently under
+              development. What you see is a preview of the features and
+              operations that will be available. Feel free to explore the
+              interface and provide feedback.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Got it!</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Header Section */}
       <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
         <div>
