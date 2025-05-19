@@ -159,7 +159,7 @@ export default function DashboardPage(): React.ReactNode {
           <AlertDialogHeader>
             <AlertDialogTitle>🚧 Development Status</AlertDialogTitle>
             <AlertDialogDescription>
-              Welcome to the TBC Dashboard! This application is currently under
+              Welcome to the Scoolr! This application is currently under
               development. What you see is a preview of the features and
               operations that will be available. Feel free to explore the
               interface and provide feedback.
