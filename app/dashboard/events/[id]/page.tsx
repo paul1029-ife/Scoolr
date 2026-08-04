@@ -1,91 +1,36 @@
-"use client";
 import React from "react";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Share2,
-  Download,
-  ArrowLeft,
-  Edit,
-} from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Event } from "../page";
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Download,
+  Edit,
+  MapPin,
+  Share2,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-interface Staff {
-  id: string;
-  name: string;
-  role: string;
-  avatar: string;
-}
+import { notFound } from "next/navigation";
 
-interface EventDetails extends Event {
-  description: string;
-  programme: string[];
-  staff: Staff[];
-  materials: { name: string; url: string }[];
-  class: string;
-  term: string;
-}
+import { getEventById } from "@/lib/queries/events";
+import { eventStatusLabel } from "@/types/event";
 
-export default function EventDetailsPage() {
-  const { id } = useParams();
-  console.log(id);
-  const eventDetails: EventDetails = {
-    id: "1",
-    title: "Inter-House Sports Competition 2025",
-    type: "Sports",
-    status: "upcoming",
-    date: "2025-02-15",
-    time: "8:00 AM - 4:00 PM",
-    location: "School Sports Field",
-    attendees: 500,
-    organizer: "Sports Department",
-    class: "All Classes",
-    term: "Second Term",
-    description:
-      "Join us for our annual Inter-House Sports Competition featuring track and field events, football matches, and cultural displays. Parents and guardians are cordially invited to attend and support their children's houses.",
-    programme: [
-      "8:00 AM - Opening Prayer and National Anthem",
-      "8:30 AM - March Past Competition",
-      "9:30 AM - Track Events Begin (100m, 200m, 400m)",
-      "11:00 AM - Field Events (High Jump, Long Jump)",
-      "12:30 PM - Lunch Break",
-      "1:30 PM - Relay Races",
-      "2:30 PM - Cultural Displays",
-      "3:30 PM - Prize Presentation",
-      "4:00 PM - Closing Ceremony",
-    ],
-    staff: [
-      {
-        id: "1",
-        name: "Mr. Ogunlade",
-        role: "Sports Master",
-        avatar: "/api/placeholder/32/32",
-      },
-      {
-        id: "2",
-        name: "Mrs. Adebayo",
-        role: "House Mistress (Blue House)",
-        avatar: "/api/placeholder/32/32",
-      },
-      {
-        id: "3",
-        name: "Mr. Nnamdi",
-        role: "House Master (Red House)",
-        avatar: "/api/placeholder/32/32",
-      },
-    ],
-    materials: [
-      { name: "Competition Schedule", url: "#" },
-      { name: "Sports Field Layout", url: "#" },
-      { name: "Parent Invitation Letter", url: "#" },
-    ],
-  };
+export default async function EventDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  // This page previously rendered one hardcoded event regardless of the id.
+  const event = await getEventById(id);
+
+  if (!event) {
+    notFound();
+  }
 
   return (
     <div className="container mx-auto space-y-8 max-w-7xl">
@@ -98,7 +43,7 @@ export default function EventDetailsPage() {
             </Button>
           </Link>
           <h1 className="text-md text-gray-800 font-medium tracking-tight">
-            {eventDetails.title}
+            {event.title}
           </h1>
         </div>
 
@@ -123,12 +68,16 @@ export default function EventDetailsPage() {
               <div className="space-y-6">
                 <div>
                   <div className="flex gap-2 mb-4">
-                    <Badge>{eventDetails.status}</Badge>
-                    <Badge variant="outline">{eventDetails.term}</Badge>
-                    <Badge variant="outline">{eventDetails.class}</Badge>
+                    <Badge>{eventStatusLabel[event.status]}</Badge>
+                    {event.termName && (
+                      <Badge variant="outline">{event.termName}</Badge>
+                    )}
+                    <Badge variant="outline">
+                      {event.className ?? "All Classes"}
+                    </Badge>
                   </div>
                   <p className="text-lg text-muted-foreground">
-                    {eventDetails.description}
+                    {event.description ?? "No description added yet."}
                   </p>
                 </div>
 
@@ -140,7 +89,12 @@ export default function EventDetailsPage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Date</p>
                       <p className="font-medium">
-                        {new Date(eventDetails.date).toLocaleDateString()}
+                        {new Date(event.date).toLocaleDateString("en-GB", {
+                          timeZone: "UTC",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
                       </p>
                     </div>
                   </div>
@@ -150,7 +104,7 @@ export default function EventDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Time</p>
-                      <p className="font-medium">{eventDetails.time}</p>
+                      <p className="font-medium">{event.time}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -159,7 +113,7 @@ export default function EventDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Venue</p>
-                      <p className="font-medium">{eventDetails.location}</p>
+                      <p className="font-medium">{event.location ?? "—"}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -171,7 +125,7 @@ export default function EventDetailsPage() {
                         Expected Attendance
                       </p>
                       <p className="font-medium">
-                        {eventDetails.attendees} people
+                        {event.expectedAttendees} people
                       </p>
                     </div>
                   </div>
@@ -185,16 +139,22 @@ export default function EventDetailsPage() {
               <h2 className="text-xl">Programme of Events</h2>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-4">
-                {eventDetails.programme.map((item, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="p-1 bg-gray-200 rounded-full mt-1">
-                      <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+              {event.programme.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No programme added yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {event.programme.map((item, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="p-1 bg-gray-200 rounded-full mt-1">
+                        <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                      </div>
+                      <p>{item}</p>
                     </div>
-                    <p>{item}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -206,23 +166,34 @@ export default function EventDetailsPage() {
               <h2 className="text-xl">Staff in Charge</h2>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-4">
-                {eventDetails.staff.map((person) => (
-                  <div key={person.id} className="flex items-center gap-3">
-                    <img
-                      src={person.avatar}
-                      alt={person.name}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    <div>
-                      <p className="font-medium">{person.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {person.role}
-                      </p>
+              {event.staff.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No staff assigned yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {event.staff.map((person) => (
+                    <div key={person.id} className="flex items-center gap-3">
+                      {/* Initials rather than a placeholder image request. */}
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-700">
+                        {person.name
+                          .split(/\s+/)
+                          .slice(0, 2)
+                          .map((part) => part[0]?.toUpperCase() ?? "")
+                          .join("")}
+                      </div>
+                      <div>
+                        <p className="font-medium">{person.name}</p>
+                        {person.role && (
+                          <p className="text-sm text-muted-foreground">
+                            {person.role}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -231,18 +202,34 @@ export default function EventDetailsPage() {
               <h2 className="text-xl">Materials</h2>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-2">
-                {eventDetails.materials.map((material, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="w-full justify-between"
-                  >
-                    {material.name}
-                    <Download className="h-4 w-4" />
-                  </Button>
-                ))}
-              </div>
+              {event.materials.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No materials attached.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {event.materials.map((material) => (
+                    <Button
+                      key={material.id}
+                      variant="outline"
+                      className="w-full justify-between"
+                      asChild={Boolean(material.url)}
+                    >
+                      {material.url ? (
+                        <a href={material.url} download>
+                          {material.name}
+                          <Download className="h-4 w-4" />
+                        </a>
+                      ) : (
+                        <>
+                          {material.name}
+                          <Download className="h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
