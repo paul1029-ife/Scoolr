@@ -1,0 +1,752 @@
+// Scoolr — School Operating System
+// Schema is multi-tenant: every domain row hangs off a School via `schoolId`.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Tenancy & identity
+// ---------------------------------------------------------------------------
+
+enum SchoolType {
+  PUBLIC
+  PRIVATE
+  MISSION
+  COMMUNITY
+}
+
+model School {
+  id            String      @id @default(cuid())
+  name          String
+  slug          String      @unique
+  /// Ownership, which in Nigeria drives fee structure and reporting lines.
+  type          SchoolType  @default(PRIVATE)
+  motto         String?
+  address       String?
+  /// One of the 36 states or FCT.
+  state         String?
+  /// Local Government Area.
+  lga           String?
+  phone         String?
+  email         String?
+  website       String?
+  logoUrl       String?
+  principalName String?
+  /// Set once the required setup steps are finished; until then the dashboard
+  /// redirects to the onboarding wizard.
+  onboardingCompletedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  users            User[]
+  academicSessions AcademicSession[]
+  classRooms       ClassRoom[]
+  teachers         Teacher[]
+  students         Student[]
+  subjects         Subject[]
+  events           Event[]
+  feeStructures    FeeStructure[]
+  invoices         Invoice[]
+  payments         Payment[]
+  invitations      Invitation[]
+  gradingScales    GradingScale[]
+  guardians        Guardian[]
+  importJobs       ImportJob[]
+
+  @@map("schools")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  TEACHER
+  PARENT
+  STUDENT
+}
+
+/// Mirrors a Neon Auth (Managed Better Auth) user. Neon Auth owns credentials
+/// and sessions; this row owns the school-facing concerns: tenancy and role.
+model User {
+  id         String   @id @default(cuid())
+  /// `user.id` from the Neon Auth session.
+  authUserId String   @unique
+  schoolId   String
+  role       Role     @default(TEACHER)
+  firstName  String
+  lastName   String
+  email      String
+  imageUrl   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  school             School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  teacher            Teacher?
+  recordedAttendance Attendance[] @relation("AttendanceRecordedBy")
+  invitationsSent    Invitation[] @relation("InvitationsSent")
+  importsRun         ImportJob[]  @relation("ImportsRun")
+
+  @@unique([schoolId, email])
+  @@index([schoolId])
+  @@map("users")
+}
+
+/// A pending invitation for someone to join a school with a given role.
+///
+/// Only the SHA-256 hash of the token is stored: the raw token exists in the
+/// emailed link and nowhere else, so a leaked database cannot be used to accept
+/// invitations.
+model Invitation {
+  id          String    @id @default(cuid())
+  schoolId    String
+  email       String
+  role        Role      @default(TEACHER)
+  tokenHash   String    @unique
+  invitedById String?
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  school    School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  invitedBy User?  @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  @@index([schoolId])
+  @@index([email])
+  @@map("invitations")
+}
+
+// ---------------------------------------------------------------------------
+// Academic calendar
+// ---------------------------------------------------------------------------
+
+/// A Nigerian academic year, e.g. "2024/2025".
+model AcademicSession {
+  id        String   @id @default(cuid())
+  schoolId  String
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isCurrent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school     School             @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  terms      Term[]
+  enrolments StudentEnrolment[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
+  @@map("academic_sessions")
+}
+
+enum TermName {
+  FIRST
+  SECOND
+  THIRD
+}
+
+model Term {
+  id        String   @id @default(cuid())
+  sessionId String
+  name      TermName
+  startDate DateTime
+  endDate   DateTime
+  isCurrent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  session            AcademicSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  attendanceRecords  Attendance[]
+  subjectAssignments SubjectAssignment[]
+  feeStructures      FeeStructure[]
+  invoices           Invoice[]
+  events             Event[]
+
+  @@unique([sessionId, name])
+  @@index([sessionId])
+  @@map("terms")
+}
+
+// ---------------------------------------------------------------------------
+// Grading
+// ---------------------------------------------------------------------------
+
+/// How a school converts scores to grades.
+///
+/// Nigerian secondary schools generally follow the WAEC bands (A1-F9) and split
+/// the total between continuous assessment and a terminal exam — commonly 30/70,
+/// though 40/60 is also used, so the weights are configurable rather than fixed.
+model GradingScale {
+  id         String   @id @default(cuid())
+  schoolId   String
+  name       String   @default("WAEC Standard")
+  /// Percentage of the total mark from continuous assessment.
+  caWeight   Int      @default(30)
+  /// Percentage from the terminal examination. caWeight + examWeight must be 100.
+  examWeight Int      @default(70)
+  isDefault  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  school School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  bands  GradeBand[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
+  @@map("grading_scales")
+}
+
+/// One row of a grading scale, e.g. A1 = 75-100 "Excellent".
+model GradeBand {
+  id       String @id @default(cuid())
+  scaleId  String
+  /// e.g. "A1", "C6", "F9".
+  code     String
+  /// e.g. "Excellent", "Credit", "Fail".
+  label    String
+  minScore Int
+  maxScore Int
+  /// Whether this band counts as a pass for promotion and reporting.
+  isPass   Boolean @default(true)
+  /// Display order, lowest first.
+  position Int     @default(0)
+
+  scale GradingScale @relation(fields: [scaleId], references: [id], onDelete: Cascade)
+
+  @@unique([scaleId, code])
+  @@index([scaleId])
+  @@map("grade_bands")
+}
+
+// ---------------------------------------------------------------------------
+// Classes
+// ---------------------------------------------------------------------------
+
+enum SchoolLevel {
+  JUNIOR
+  SENIOR
+}
+
+/// Senior secondary specialisation. Junior classes leave this unset.
+enum Stream {
+  SCIENCE
+  ARTS
+  COMMERCIAL
+}
+
+/// A class such as "JSS 1". `arm` distinguishes parallel sets ("A"/"B") and is
+/// an empty string when the school runs a single arm per class, which keeps the
+/// composite unique constraint enforceable (Postgres treats NULLs as distinct).
+model ClassRoom {
+  id            String      @id @default(cuid())
+  schoolId      String
+  name          String
+  level         SchoolLevel
+  arm           String      @default("")
+  stream        Stream?
+  /// The "arm teacher" shown on the students dashboard.
+  formTeacherId String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  school             School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  formTeacher        Teacher?            @relation("ClassFormTeacher", fields: [formTeacherId], references: [id], onDelete: SetNull)
+  students           Student[]
+  teachers           Teacher[]           @relation("TeacherAssignedClass")
+  attendanceRecords  Attendance[]
+  subjectAssignments SubjectAssignment[]
+  feeStructures      FeeStructure[]
+  events             Event[]
+  enrolments         StudentEnrolment[]
+
+  @@unique([schoolId, name, arm])
+  @@index([schoolId])
+  @@map("class_rooms")
+}
+
+// ---------------------------------------------------------------------------
+// Teachers
+// ---------------------------------------------------------------------------
+
+enum TeacherStatus {
+  ACTIVE
+  ON_LEAVE
+}
+
+model Teacher {
+  id          String        @id @default(cuid())
+  schoolId    String
+  /// Set once the teacher has signed in and been linked to a User.
+  userId      String?       @unique
+  staffNumber String?
+  /// Full display name including title, e.g. "Dr. Oluwaseun Adeleke".
+  name        String
+  email       String
+  phoneNumber String
+  /// Primary subject taught, as entered on the teacher form.
+  subject     String
+  classRoomId String?
+  status      TeacherStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  school             School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user               User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  classRoom          ClassRoom?          @relation("TeacherAssignedClass", fields: [classRoomId], references: [id], onDelete: SetNull)
+  formTeacherOf      ClassRoom[]         @relation("ClassFormTeacher")
+  subjectAssignments SubjectAssignment[]
+
+  @@unique([schoolId, email])
+  @@index([schoolId])
+  @@index([schoolId, status])
+  @@map("teachers")
+}
+
+// ---------------------------------------------------------------------------
+// Students
+// ---------------------------------------------------------------------------
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum StudentStatus {
+  ACTIVE
+  GRADUATED
+  WITHDRAWN
+}
+
+model Student {
+  id                 String        @id @default(cuid())
+  schoolId           String
+  classRoomId        String?
+  /// e.g. "2024/001"
+  registrationNumber String
+  name               String
+  gender             Gender
+  dateOfBirth        DateTime?
+  address            String?
+  status             StudentStatus @default(ACTIVE)
+  admittedAt         DateTime      @default(now())
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  school            School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classRoom         ClassRoom?   @relation(fields: [classRoomId], references: [id], onDelete: SetNull)
+  attendanceRecords Attendance[]
+  invoices          Invoice[]
+  payments          Payment[]
+  guardians         StudentGuardian[]
+  enrolments        StudentEnrolment[]
+
+  @@unique([schoolId, registrationNumber])
+  @@index([schoolId])
+  @@index([classRoomId])
+  @@map("students")
+}
+
+// ---------------------------------------------------------------------------
+// Guardians
+// ---------------------------------------------------------------------------
+
+/// How a guardian is related to a student.
+enum GuardianRelationship {
+  FATHER
+  MOTHER
+  GUARDIAN
+  OTHER
+}
+
+/// A parent or guardian. Held separately from Student so one family contact can
+/// cover several siblings without their details being duplicated per child.
+model Guardian {
+  id        String   @id @default(cuid())
+  schoolId  String
+  firstName String
+  lastName  String
+  phone     String
+  email     String?
+  address   String?
+  occupation String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school   School            @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  students StudentGuardian[]
+
+  /// Phone is how schools actually identify a parent, so it is the natural key.
+  @@unique([schoolId, phone])
+  @@index([schoolId])
+  @@map("guardians")
+}
+
+model StudentGuardian {
+  id           String               @id @default(cuid())
+  studentId    String
+  guardianId   String
+  relationship GuardianRelationship @default(GUARDIAN)
+  /// The contact the school calls first.
+  isPrimary    Boolean              @default(false)
+  createdAt    DateTime             @default(now())
+
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, guardianId])
+  @@index([guardianId])
+  @@map("student_guardians")
+}
+
+// ---------------------------------------------------------------------------
+// Enrolment
+// ---------------------------------------------------------------------------
+
+enum EnrolmentStatus {
+  ACTIVE
+  PROMOTED
+  REPEATED
+  TRANSFERRED
+  GRADUATED
+  WITHDRAWN
+}
+
+/// Which class a student sat in for a given session.
+///
+/// Student.classRoomId is the current placement; this is the history, which is
+/// what makes promotion (and re-printing an old report) possible.
+model StudentEnrolment {
+  id          String          @id @default(cuid())
+  studentId   String
+  sessionId   String
+  classRoomId String
+  status      EnrolmentStatus @default(ACTIVE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  student   Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  session   AcademicSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  classRoom ClassRoom       @relation(fields: [classRoomId], references: [id], onDelete: Cascade)
+
+  /// A student sits in one class per session.
+  @@unique([studentId, sessionId])
+  @@index([sessionId])
+  @@index([classRoomId])
+  @@map("student_enrolments")
+}
+
+// ---------------------------------------------------------------------------
+// Data import
+// ---------------------------------------------------------------------------
+
+enum ImportEntity {
+  STUDENTS
+  TEACHERS
+  GUARDIANS
+  SUBJECTS
+  CLASSES
+}
+
+/// Record of a CSV import, so a school can see what was loaded and by whom.
+model ImportJob {
+  id           String       @id @default(cuid())
+  schoolId     String
+  entity       ImportEntity
+  fileName     String
+  totalRows    Int
+  createdCount Int          @default(0)
+  updatedCount Int          @default(0)
+  skippedCount Int          @default(0)
+  importedById String?
+  createdAt    DateTime     @default(now())
+
+  school     School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  importedBy User?  @relation("ImportsRun", fields: [importedById], references: [id], onDelete: SetNull)
+
+  @@index([schoolId, createdAt])
+  @@map("import_jobs")
+}
+
+// ---------------------------------------------------------------------------
+// Attendance
+// ---------------------------------------------------------------------------
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+/// One row per student per day. The present/absent/late totals the UI shows are
+/// derived from these rows rather than stored, so they can never drift.
+model Attendance {
+  id           String           @id @default(cuid())
+  studentId    String
+  classRoomId  String
+  termId       String?
+  date         DateTime         @db.Date
+  status       AttendanceStatus
+  note         String?
+  recordedById String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  student    Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classRoom  ClassRoom @relation(fields: [classRoomId], references: [id], onDelete: Cascade)
+  term       Term?     @relation(fields: [termId], references: [id], onDelete: SetNull)
+  recordedBy User?     @relation("AttendanceRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@unique([studentId, date])
+  @@index([classRoomId, date])
+  @@index([termId])
+  @@map("attendance_records")
+}
+
+// ---------------------------------------------------------------------------
+// Subjects & timetable
+// ---------------------------------------------------------------------------
+
+enum SubjectLevel {
+  JUNIOR
+  SENIOR
+  ALL_LEVELS
+}
+
+model Subject {
+  id            String       @id @default(cuid())
+  schoolId      String
+  name          String
+  department    String
+  level         SubjectLevel @default(ALL_LEVELS)
+  /// Tailwind background class used by the existing subject cards.
+  colorClass    String       @default("bg-blue-100")
+  description   String?
+  room          String?
+  /// Free-text lists shown on the subject detail page.
+  objectives    String[]     @default([])
+  materials     String[]     @default([])
+  prerequisites String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  school      School              @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  assignments SubjectAssignment[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
+  @@map("subjects")
+}
+
+/// Who teaches which subject, to which class, in which term — plus when.
+model SubjectAssignment {
+  id          String   @id @default(cuid())
+  subjectId   String
+  classRoomId String
+  teacherId   String?
+  termId      String?
+  /// Human-readable meeting days, e.g. "Mon, Wed, Fri".
+  schedule    String?
+  startTime   String?
+  endTime     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subject   Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  classRoom ClassRoom @relation(fields: [classRoomId], references: [id], onDelete: Cascade)
+  teacher   Teacher?  @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  term      Term?     @relation(fields: [termId], references: [id], onDelete: SetNull)
+
+  @@unique([subjectId, classRoomId, termId])
+  @@index([teacherId])
+  @@index([classRoomId])
+  @@map("subject_assignments")
+}
+
+// ---------------------------------------------------------------------------
+// Events
+// ---------------------------------------------------------------------------
+
+enum EventStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Event {
+  id                String      @id @default(cuid())
+  schoolId          String
+  title             String
+  description       String?
+  /// Event type as shown on the events board, e.g. "Academic", "Sports".
+  category          String
+  /// Tailwind background class used by the existing event cards.
+  colorClass        String      @default("bg-blue-100")
+  startsAt          DateTime
+  endsAt            DateTime?
+  location          String?
+  organizer         String?
+  expectedAttendees Int?
+  status            EventStatus @default(UPCOMING)
+  /// Ordered running order shown on the event detail page.
+  programme         String[]    @default([])
+  /// Optional scoping: an event may target one class and/or one term.
+  classRoomId       String?
+  termId            String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  school    School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classRoom ClassRoom?      @relation(fields: [classRoomId], references: [id], onDelete: SetNull)
+  term      Term?           @relation(fields: [termId], references: [id], onDelete: SetNull)
+  attendees EventAttendee[]
+  materials EventMaterial[]
+
+  @@index([schoolId])
+  @@index([schoolId, startsAt])
+  @@map("events")
+}
+
+model EventMaterial {
+  id        String   @id @default(cuid())
+  eventId   String
+  name      String
+  url       String?
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_materials")
+}
+
+model EventAttendee {
+  id        String   @id @default(cuid())
+  eventId   String
+  /// Free-text name so guests without an account can still be recorded.
+  name      String
+  role      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@map("event_attendees")
+}
+
+// ---------------------------------------------------------------------------
+// Billing
+// ---------------------------------------------------------------------------
+
+enum FeeCategory {
+  SCHOOL_FEES
+  BUS
+  UNIFORM
+  EXAM
+  BOOKS
+  OTHER
+}
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CARD
+  CHEQUE
+  OTHER
+}
+
+/// The termly fee for a class. Drives "expected vs collected" on the billing page.
+model FeeStructure {
+  id          String      @id @default(cuid())
+  schoolId    String
+  classRoomId String
+  termId      String
+  category    FeeCategory @default(SCHOOL_FEES)
+  /// Naira. Decimal (not Float) so money never rounds badly.
+  amount      Decimal     @db.Decimal(12, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  school    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classRoom ClassRoom @relation(fields: [classRoomId], references: [id], onDelete: Cascade)
+  term      Term      @relation(fields: [termId], references: [id], onDelete: Cascade)
+
+  @@unique([classRoomId, termId, category])
+  @@index([schoolId])
+  @@map("fee_structures")
+}
+
+/// What a student owes for a term. Payments settle against it.
+model Invoice {
+  id        String        @id @default(cuid())
+  schoolId  String
+  studentId String
+  termId    String
+  category  FeeCategory   @default(SCHOOL_FEES)
+  reference String        @unique
+  amount    Decimal       @db.Decimal(12, 2)
+  dueDate   DateTime
+  status    InvoiceStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  school   School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  student  Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  term     Term      @relation(fields: [termId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([schoolId, status])
+  @@map("invoices")
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  schoolId  String
+  studentId String
+  invoiceId String?
+  reference String        @unique
+  amount    Decimal       @db.Decimal(12, 2)
+  method    PaymentMethod @default(BANK_TRANSFER)
+  status    PaymentStatus @default(PAID)
+  paidAt    DateTime      @default(now())
+  note      String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  school  School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  student Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  invoice Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([schoolId, paidAt])
+  @@map("payments")
+}
