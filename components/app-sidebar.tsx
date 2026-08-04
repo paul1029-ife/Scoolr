@@ -4,28 +4,42 @@ import * as React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
+  ChevronsLeft,
+  ChevronsRight,
   CreditCard,
   Disc,
   Home,
+  LogOut,
   PenSquare,
+  Settings,
+  ShieldCheck,
   Shirt,
   Timer,
-  Settings,
+  Upload,
   User,
-  LogOut,
-  ChevronsRight,
-  ChevronsLeft,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useClerk } from "@clerk/nextjs";
+import { authClient } from "@/lib/auth/client";
+import { usePermissions } from "@/components/auth/permissions-provider";
+import type { Permission } from "@/lib/auth/permissions";
+
+/** The signed-in user, resolved server-side in the dashboard layout. */
+export interface SidebarUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
 
 interface AppSidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  user: SidebarUser;
   children: React.ReactNode;
 }
 
-const primaryNavigation = [
+const primaryNavigation: NavItem[] = [
   {
     title: "Dashboard",
     url: "/dashboard",
@@ -41,35 +55,89 @@ const primaryNavigation = [
     title: "Students",
     url: "/dashboard/students",
     icon: <Shirt className="h-5 w-5" />,
-    badge: "12 new",
   },
   {
     title: "Teachers",
     url: "/dashboard/teachers",
     icon: <PenSquare className="h-5 w-5" />,
   },
+  {
+    title: "Guardians",
+    url: "/dashboard/guardians",
+    icon: <Users className="h-5 w-5" />,
+  },
 ];
 
-const secondaryNavigation = [
+const secondaryNavigation: NavItem[] = [
   {
     title: "Billing",
     url: "/dashboard/billings",
     icon: <CreditCard className="h-5 w-5" />,
+    // Hidden from teachers, whose accounts cannot open the billing page.
+    permission: "billing:view",
   },
   {
     title: "Events",
     url: "/dashboard/events",
     icon: <Timer className="h-5 w-5" />,
   },
+  {
+    title: "Staff",
+    url: "/dashboard/staff",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    permission: "school:manage",
+  },
+  {
+    title: "Import",
+    url: "/dashboard/import",
+    icon: <Upload className="h-5 w-5" />,
+    permission: "school:manage",
+  },
 ];
+
+/** Nav entries carry an optional permission so the menu matches what a role can reach. */
+type NavItem = {
+  title: string;
+  url: string;
+  icon: React.ReactNode;
+  exact?: boolean;
+  badge?: string;
+  permission?: Permission;
+};
 
 export function AppSidebar({
   isCollapsed,
   setIsCollapsed,
+  user,
   children,
 }: AppSidebarProps) {
   const pathname = usePathname();
-  const { signOut } = useClerk();
+  const permissions = usePermissions();
+
+  // Only show what this role can actually open.
+  const visible = (items: NavItem[]) =>
+    items.filter(
+      (item) => !item.permission || permissions.has(item.permission)
+    );
+
+  const displayName =
+    [user.firstName, user.lastName].filter(Boolean).join(" ").trim() ||
+    user.email;
+  const initials =
+    [user.firstName, user.lastName]
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? "")
+      .join("") || user.email[0]?.toUpperCase();
+  // "SUPER_ADMIN" -> "Super admin"
+  const roleLabel =
+    user.role.charAt(0) + user.role.slice(1).toLowerCase().replace(/_/g, " ");
+
+  const signOut = async () => {
+    await authClient.signOut();
+    // Full document load so no cached authenticated RSC payload survives.
+    window.location.assign("/");
+  };
 
   const toggleCollapse = () => setIsCollapsed(!isCollapsed);
 
@@ -133,7 +201,7 @@ export function AppSidebar({
           )}
 
           <nav>
-            {primaryNavigation.map((item) => {
+            {visible(primaryNavigation).map((item) => {
               const isActive = item.exact
                 ? pathname === item.url
                 : pathname.startsWith(item.url);
@@ -200,7 +268,7 @@ export function AppSidebar({
           )}
 
           <nav className={isCollapsed ? "mt-4" : ""}>
-            {secondaryNavigation.map((item) => {
+            {visible(secondaryNavigation).map((item) => {
               const isActive = pathname.startsWith(item.url);
               return (
                 <div key={item.title} className="relative group">
@@ -256,18 +324,20 @@ export function AppSidebar({
               )}
             >
               <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-sm font-medium text-gray-700">
-                AD
+                {initials}
               </div>
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">Admin User</p>
+                  <p className="text-sm font-medium truncate">{displayName}</p>
+                  <p className="text-xs text-gray-500 truncate">{roleLabel}</p>
                 </div>
               )}
 
               {isCollapsed && (
                 <div className="absolute left-full ml-2 bottom-0 w-max p-2 rounded-md bg-white border border-gray-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                   <div className="whitespace-nowrap">
-                    <p className="font-medium">Admin User</p>
+                    <p className="font-medium">{displayName}</p>
+                    <p className="text-xs text-gray-500">{roleLabel}</p>
                   </div>
                 </div>
               )}
