@@ -1,15 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-"use-client";
+"use client";
 
 import React from "react";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { FormDrawer } from "@/components/common/form-drawer";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -29,21 +22,25 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { Student } from "./AddStudentModal";
+
+import { saveAttendance } from "@/lib/actions/students";
+import { runAction } from "@/lib/actions/run-action";
+import { useToast } from "@/hooks/use-toast";
+import type { Student } from "@/types/student";
+
 interface TakeAttendanceModalProps {
+  classRoomId: string;
   students: Student[];
-  onUpdateAttendance: (attendanceData: {
-    date: Date;
-    attendance: Record<string, boolean>;
-  }) => void;
 }
 
 export function TakeAttendanceModal({
+  classRoomId,
   students,
-  onUpdateAttendance,
 }: TakeAttendanceModalProps) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
   const [attendanceState, setAttendanceState] = useState<
     Record<string, boolean>
   >({});
@@ -71,10 +68,27 @@ export function TakeAttendanceModal({
     }));
   };
 
-  const handleSubmit = () => {
-    onUpdateAttendance({
-      date,
-      attendance: attendanceState,
+  const handleSubmit = async () => {
+    setIsSaving(true);
+    const result = await runAction(() =>
+      saveAttendance(classRoomId, date.toISOString(), attendanceState)
+    );
+    setIsSaving(false);
+
+    if (!result.ok) {
+      toast({
+        title: "Could not save attendance",
+        description: result.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Attendance saved",
+      description: `${format(date, "PPP")} recorded for ${
+        students.length
+      } student${students.length === 1 ? "" : "s"}.`,
     });
     setOpen(false);
   };
@@ -96,16 +110,16 @@ export function TakeAttendanceModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="bg-blue-600">Take Attendance</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] h-full overflow-hidden">
-        <DialogHeader>
-          <DialogTitle>Take Attendance</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4 h-full overflow-scroll">
+    <FormDrawer
+      open={open}
+      onOpenChange={handleOpenChange}
+      title="Take Attendance"
+      description="Re-taking attendance for the same date replaces that day's record."
+      width="xl"
+      trigger={<Button className="bg-blue-600">Take Attendance</Button>}
+    >
+      <div className="flex h-full flex-col">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
           <div className="flex items-center gap-4">
             <Popover>
               <PopoverTrigger asChild>
@@ -158,10 +172,9 @@ export function TakeAttendanceModal({
                     <TableCell>{student.registrationNumber}</TableCell>
                     <TableCell>
                       <Checkbox
-                        checked={attendanceState[student.id]}
+                        checked={attendanceState[student.id] ?? false}
                         onCheckedChange={(checked) =>
-                          //@ts-expect-error
-                          handleAttendanceChange(student.id, checked as boolean)
+                          handleAttendanceChange(student.id, checked === true)
                         }
                         className="bg-blue-600"
                       />
@@ -172,16 +185,27 @@ export function TakeAttendanceModal({
             </Table>
           </div>
 
+        </div>
+
+        <div className="shrink-0 border-t bg-white px-6 py-4">
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isSaving}
+            >
               Cancel
             </Button>
-            <Button className="bg-blue-600" onClick={handleSubmit}>
-              Save Attendance
+            <Button
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={handleSubmit}
+              disabled={isSaving || students.length === 0}
+            >
+              {isSaving ? "Saving..." : "Save Attendance"}
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </FormDrawer>
   );
 }
