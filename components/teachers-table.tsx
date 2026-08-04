@@ -1,6 +1,7 @@
 "use client"
 
 import { useTeachers } from "@/context/teachers-context"
+import { TeacherStatus, classRoomLabel, teacherStatusLabel } from "@/types/teacher"
 import { Button } from "@/components/ui/button"
 import { MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -30,7 +31,7 @@ export function TeachersTable({ onEdit }: TeachersTableProps) {
           <TableRow key={teacher.id}>
             <TableCell className="font-medium">{teacher.name}</TableCell>
             <TableCell>{teacher.subject}</TableCell>
-            <TableCell>{teacher.classAssigned}</TableCell>
+            <TableCell>{classRoomLabel(teacher.classRoom)}</TableCell>
             <TableCell>
               <div>
                 <p>{teacher.phoneNumber}</p>
@@ -40,10 +41,12 @@ export function TeachersTable({ onEdit }: TeachersTableProps) {
             <TableCell>
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  teacher.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                  teacher.status === TeacherStatus.ACTIVE
+                    ? "bg-green-100 text-green-800"
+                    : "bg-yellow-100 text-yellow-800"
                 }`}
               >
-                {teacher.status === "active" ? "Active" : "On Leave"}
+                {teacherStatusLabel[teacher.status]}
               </span>
             </TableCell>
             <TableCell>

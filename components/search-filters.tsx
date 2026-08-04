@@ -4,6 +4,7 @@ import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useTeachers } from "@/context/teachers-context"
+import { TeacherStatus, teacherStatusLabel } from "@/types/teacher"
 
 export function SearchFilters() {
   const { searchQuery, setSearchQuery, statusFilter, setStatusFilter } = useTeachers()
@@ -25,8 +26,12 @@ export function SearchFilters() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Status</SelectItem>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="on leave">On Leave</SelectItem>
+          <SelectItem value={TeacherStatus.ACTIVE}>
+            {teacherStatusLabel[TeacherStatus.ACTIVE]}
+          </SelectItem>
+          <SelectItem value={TeacherStatus.ON_LEAVE}>
+            {teacherStatusLabel[TeacherStatus.ON_LEAVE]}
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
