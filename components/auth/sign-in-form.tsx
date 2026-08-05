@@ -8,6 +8,7 @@ import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 
 import { authClient } from "@/lib/auth/client";
+import { authErrorStatus, describeAuthFailure } from "@/lib/auth/auth-error";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -38,33 +39,58 @@ export function SignInForm({ redirectTo }: { redirectTo: string }) {
   const onSubmit = async (values: SignInValues) => {
     setFormError(null);
 
-    const { data, error } = await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-    });
+    const fallback = "Could not sign you in. Please try again.";
 
-    if (error) {
-      // Deliberately generic: distinguishing "no such account" from "wrong
-      // password" tells an attacker which emails are registered.
-      setFormError(
-        error.status === 401 || error.status === 403
-          ? "That email or password is incorrect."
-          : error.message ?? "Could not sign you in. Please try again."
-      );
-      return;
+    /**
+     * Shared by the resolved and thrown paths so a failure reads the same
+     * either way. Deliberately generic for a rejected credential:
+     * distinguishing "no such account" from "wrong password" tells an attacker
+     * which emails are registered. But only when the credential is what was
+     * actually rejected — a 403 from an untrusted origin is a config fault,
+     * and blaming the password for it sends people off resetting a password
+     * that was never wrong.
+     */
+    const messageFor = (cause: unknown) => {
+      const specific = describeAuthFailure(cause);
+      if (specific) return specific;
+
+      const status = authErrorStatus(cause);
+      return status === 401 || status === 403
+        ? "That email or password is incorrect."
+        : fallback;
+    };
+
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        setFormError(messageFor(error));
+        return;
+      }
+
+      // Never leave the user on a form that appears to have done nothing.
+      if (!data) {
+        setFormError(
+          "Signed in, but no session was returned. Please try again."
+        );
+        return;
+      }
+
+      // A full document load, not router.push(). The client router caches the
+      // proxy redirect that sent an unauthenticated visitor here, so a soft
+      // navigation to /dashboard replays that cached redirect straight back
+      // to /login even though the session cookie is now set.
+      window.location.assign(redirectTo);
+    } catch (cause) {
+      // This is the path that actually runs: authClient throws on every failed
+      // response rather than resolving with `{ error }`. Without it the form
+      // just sat there after a rejected sign-in.
+      console.error("Sign-in failed", cause);
+      setFormError(messageFor(cause));
     }
-
-    // Never leave the user on a form that appears to have done nothing.
-    if (!data) {
-      setFormError("Signed in, but no session was returned. Please try again.");
-      return;
-    }
-
-    // A full document load, not router.push(). The client router caches the
-    // middleware redirect that sent an unauthenticated visitor here, so a
-    // soft navigation to /dashboard replays that cached redirect straight
-    // back to /login even though the session cookie is now set.
-    window.location.assign(redirectTo);
   };
 
   const isSubmitting = form.formState.isSubmitting;
