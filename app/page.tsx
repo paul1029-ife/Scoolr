@@ -17,24 +17,19 @@ import {
   BarChart,
 } from "lucide-react";
 import Navbar from "../components/NavBar";
-import { useAuth } from "@clerk/nextjs";
+import { authClient } from "@/lib/auth/client";
 import "./globals.css";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 export default function Home() {
   const router = useRouter();
-  const { sessionId } = useAuth();
+  const { data: session } = authClient.useSession();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      if (sessionId) {
-        router.push("/dashboard");
-      } else {
-        return;
-      }
-    };
-    checkAuth();
-  }, [sessionId]);
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />

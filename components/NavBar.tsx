@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
-import {
-  SignInButton,
-  SignOutButton,
-  SignedIn,
-  SignedOut,
-} from "@clerk/nextjs";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+
+import { authClient } from "@/lib/auth/client";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { data: session } = authClient.useSession();
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    // Full document load so no cached authenticated RSC payload survives.
+    window.location.assign("/");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,16 +64,21 @@ const Navbar = () => {
               </a>
             ))}
             <div className="ml-4">
-              <SignedOut>
-                <SignInButton>
-                  <button className="py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
-                    Log in
-                  </button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <SignOutButton />
-              </SignedIn>
+              {session ? (
+                <button
+                  onClick={handleSignOut}
+                  className="py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                >
+                  Sign out
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="inline-block py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                >
+                  Log in
+                </Link>
+              )}
             </div>
           </div>
 
@@ -103,16 +111,22 @@ const Navbar = () => {
               </a>
             ))}
             <div className="px-3 py-2">
-              <SignedOut>
-                <SignInButton>
-                  <button className="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
-                    Log in
-                  </button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <SignOutButton />
-              </SignedIn>
+              {session ? (
+                <button
+                  onClick={handleSignOut}
+                  className="w-full py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                >
+                  Sign out
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block w-full text-center py-2 px-4 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Log in
+                </Link>
+              )}
             </div>
           </div>
         </div>

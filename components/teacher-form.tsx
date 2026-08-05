@@ -2,7 +2,14 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type Teacher, type TeacherFormData, teacherFormSchema } from "@/types/teacher"
+import {
+  TeacherStatus,
+  classRoomLabel,
+  teacherFormSchema,
+  teacherStatusLabel,
+  type Teacher,
+  type TeacherFormData,
+} from "@/types/teacher"
 import { useTeachers } from "@/context/teachers-context"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -15,33 +22,48 @@ interface TeacherFormProps {
 }
 
 export function TeacherForm({ teacher, onClose }: TeacherFormProps) {
-  const { addTeacher, updateTeacher } = useTeachers()
+  const { addTeacher, updateTeacher, classRooms, isPending } = useTeachers()
 
   const form = useForm<TeacherFormData>({
     resolver: zodResolver(teacherFormSchema),
-    defaultValues: teacher ?? {
-      name: "",
-      subject: "",
-      classAssigned: "SSS 1",
-      phoneNumber: "",
-      email: "",
-      status: "active",
-    },
+    defaultValues: teacher
+      ? {
+          name: teacher.name,
+          subject: teacher.subject,
+          classRoomId: teacher.classRoomId ?? "",
+          phoneNumber: teacher.phoneNumber,
+          email: teacher.email,
+          status: teacher.status,
+        }
+      : {
+          name: "",
+          subject: "",
+          classRoomId: classRooms[0]?.id ?? "",
+          phoneNumber: "",
+          email: "",
+          status: TeacherStatus.ACTIVE,
+        },
   })
 
-  const onSubmit = (data: TeacherFormData) => {
-    if (teacher) {
-      updateTeacher(teacher.id, data)
-    } else {
-      addTeacher(data)
-    }
+  const onSubmit = async (data: TeacherFormData) => {
+    const saved = teacher
+      ? await updateTeacher(teacher.id, data)
+      : await addTeacher(data)
+
+    // Keep the dialog open on failure so the entered details aren't lost.
+    if (!saved) return
+
     form.reset()
     onClose()
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex h-full flex-col"
+      >
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
         <FormField
           control={form.control}
           name="name"
@@ -72,7 +94,7 @@ export function TeacherForm({ teacher, onClose }: TeacherFormProps) {
 
         <FormField
           control={form.control}
-          name="classAssigned"
+          name="classRoomId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Class Assigned</FormLabel>
@@ -83,12 +105,11 @@ export function TeacherForm({ teacher, onClose }: TeacherFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="JSS 1">JSS 1</SelectItem>
-                  <SelectItem value="JSS 2">JSS 2</SelectItem>
-                  <SelectItem value="JSS 3">JSS 3</SelectItem>
-                  <SelectItem value="SSS 1">SSS 1</SelectItem>
-                  <SelectItem value="SSS 2">SSS 2</SelectItem>
-                  <SelectItem value="SSS 3">SSS 3</SelectItem>
+                  {classRooms.map((classRoom) => (
+                    <SelectItem key={classRoom.id} value={classRoom.id}>
+                      {classRoomLabel(classRoom)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -137,8 +158,12 @@ export function TeacherForm({ teacher, onClose }: TeacherFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="on leave">On Leave</SelectItem>
+                  <SelectItem value={TeacherStatus.ACTIVE}>
+                    {teacherStatusLabel[TeacherStatus.ACTIVE]}
+                  </SelectItem>
+                  <SelectItem value={TeacherStatus.ON_LEAVE}>
+                    {teacherStatusLabel[TeacherStatus.ON_LEAVE]}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -146,11 +171,28 @@ export function TeacherForm({ teacher, onClose }: TeacherFormProps) {
           )}
         />
 
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit">{teacher ? "Update" : "Add"} Teacher</Button>
+        </div>
+
+        <div className="shrink-0 border-t bg-white px-6 py-4">
+          <div className="flex justify-end space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="bg-blue-600 text-white hover:bg-blue-700"
+            >
+              {isPending
+                ? "Saving..."
+                : `${teacher ? "Update" : "Add"} Teacher`}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>

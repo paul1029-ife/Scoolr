@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { FormDrawer, DrawerForm } from "@/components/common/form-drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,98 +14,45 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-interface Subject {
-  id: string;
-  name: string;
-  department: string;
-  teacher: string;
-  students: number;
-  level: string;
-  schedule: string;
-  time: string;
-}
+import { createSubject } from "@/lib/actions/subjects";
+import { runAction } from "@/lib/actions/run-action";
+import { DEPARTMENTS, SubjectLevel, subjectLevelLabel } from "@/types/subject";
+
+const EMPTY_FORM = {
+  name: "",
+  department: "",
+  level: "" as SubjectLevel | "",
+  teacherId: "",
+  classRoomId: "",
+  schedule: "",
+  time: "",
+};
 
 const AddSubjectModal = ({
-  onSubjectAdded,
+  teachers,
+  classRooms,
 }: {
-  onSubjectAdded: () => void;
+  teachers: { id: string; name: string }[];
+  classRooms: { id: string; name: string; arm: string }[];
 }) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<Subject>({
-    id: "",
-    name: "",
-    department: "",
-    teacher: "",
-    students: 0,
-    level: "",
-    schedule: "",
-    time: "",
-  });
-
-  const departments = [
-    "Sciences",
-    "Humanities",
-    "Religious Studies",
-    "Arts",
-    "Physical Education",
-  ];
-  const levels = ["Junior", "Senior", "All Levels"];
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState(EMPTY_FORM);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "students" ? parseInt(value) || 0 : value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSelectChange = (value: string, field: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const saveSubject = () => {
-    const existingSubjects = JSON.parse(
-      localStorage.getItem("subjects") || "[]"
-    );
-
-    const newSubject = {
-      ...formData,
-      id: Date.now().toString(),
-    };
-
-    const updatedSubjects = [...existingSubjects, newSubject];
-
-    localStorage.setItem("subjects", JSON.stringify(updatedSubjects));
-
-    toast({
-      title: "Subject Added",
-      description: "The subject has been successfully added to the system.",
-    });
-
-    // Reset form and close modal
-    setFormData({
-      id: "",
-      name: "",
-      department: "",
-      teacher: "",
-      students: 0,
-      level: "",
-      schedule: "",
-      time: "",
-    });
-    setOpen(false);
-
-    // Trigger refresh of subjects list
-    onSubjectAdded();
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.department || !formData.teacher) {
+
+    if (!formData.name || !formData.department || !formData.level) {
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
@@ -120,24 +60,75 @@ const AddSubjectModal = ({
       });
       return;
     }
-    saveSubject();
+
+    setIsSaving(true);
+    const result = await runAction(() =>
+      createSubject({
+      name: formData.name,
+      department: formData.department,
+      level: formData.level as SubjectLevel,
+      teacherId: formData.teacherId || undefined,
+      classRoomId: formData.classRoomId || undefined,
+      schedule: formData.schedule || undefined,
+        time: formData.time || undefined,
+      })
+    );
+    setIsSaving(false);
+
+    if (!result.ok) {
+      toast({
+        title: "Error",
+        description: result.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Subject Added",
+      description: "The subject has been successfully added to the system.",
+    });
+
+    setFormData(EMPTY_FORM);
+    setOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <FormDrawer
+      open={open}
+      onOpenChange={setOpen}
+      title="Add New Subject"
+      description="Create a subject and optionally timetable it to a class."
+      width="lg"
+      trigger={
         <Button className="bg-blue-600 hover:bg-blue-700">
           Add New Subject
         </Button>
-      </DialogTrigger>
-      <DialogContent className="w-full max-w-md md:max-w-lg lg:max-w-xl p-6">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-gray-800">
-            Add New Subject
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      }
+    >
+      <DrawerForm
+        onSubmit={handleSubmit}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isSaving ? "Saving..." : "Save Subject"}
+            </Button>
+          </>
+        }
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="name" className="font-medium">
                 Subject Name *
@@ -166,7 +157,7 @@ const AddSubjectModal = ({
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
-                  {departments.map((dept) => (
+                  {DEPARTMENTS.map((dept) => (
                     <SelectItem key={dept} value={dept}>
                       {dept}
                     </SelectItem>
@@ -177,7 +168,7 @@ const AddSubjectModal = ({
 
             <div className="space-y-2">
               <Label htmlFor="level" className="font-medium">
-                Level
+                Level *
               </Label>
               <Select
                 value={formData.level}
@@ -187,9 +178,9 @@ const AddSubjectModal = ({
                   <SelectValue placeholder="Select level" />
                 </SelectTrigger>
                 <SelectContent>
-                  {levels.map((level) => (
+                  {Object.values(SubjectLevel).map((level) => (
                     <SelectItem key={level} value={level}>
-                      {level}
+                      {subjectLevelLabel[level]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -197,32 +188,59 @@ const AddSubjectModal = ({
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="teacher" className="font-medium">
-                Teacher Name *
+              <Label htmlFor="teacherId" className="font-medium">
+                Teacher
               </Label>
-              <Input
-                id="teacher"
-                name="teacher"
-                value={formData.teacher}
-                onChange={handleInputChange}
-                placeholder="Enter teacher name"
-                className="w-full"
-              />
+              <Select
+                value={formData.teacherId}
+                onValueChange={(value) =>
+                  handleSelectChange(value, "teacherId")
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      teachers.length
+                        ? "Select teacher"
+                        : "No teachers added yet"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {teachers.map((teacher) => (
+                    <SelectItem key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
+            {/* Replaces the old free-typed student count: enrolment is derived
+                from the class this subject is taught to. */}
             <div className="space-y-2">
-              <Label htmlFor="students" className="font-medium">
-                Number of Students
+              <Label htmlFor="classRoomId" className="font-medium">
+                Class
               </Label>
-              <Input
-                id="students"
-                name="students"
-                type="number"
-                value={formData.students || ""}
-                onChange={handleInputChange}
-                placeholder="Enter number"
-                className="w-full"
-              />
+              <Select
+                value={formData.classRoomId}
+                onValueChange={(value) =>
+                  handleSelectChange(value, "classRoomId")
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select class" />
+                </SelectTrigger>
+                <SelectContent>
+                  {classRooms.map((classRoom) => (
+                    <SelectItem key={classRoom.id} value={classRoom.id}>
+                      {[classRoom.name, classRoom.arm]
+                        .filter(Boolean)
+                        .join(" ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -254,25 +272,8 @@ const AddSubjectModal = ({
             </div>
           </div>
 
-          <DialogFooter className="mt-6 flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              className="w-full sm:w-auto"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
-            >
-              Save Subject
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerForm>
+    </FormDrawer>
   );
 };
 

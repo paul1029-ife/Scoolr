@@ -1,14 +1,17 @@
 "use client";
 
 import { useTeachers } from "@/context/teachers-context";
+import { TeacherStatus } from "@/types/teacher";
 import SimpleCard from "./common/simple-card";
 
 export function TeacherStats() {
   const { teachers } = useTeachers();
 
-  const activeTeachers = teachers.filter((t) => t.status === "active").length;
+  const activeTeachers = teachers.filter(
+    (t) => t.status === TeacherStatus.ACTIVE
+  ).length;
   const onLeaveTeachers = teachers.filter(
-    (t) => t.status === "on leave"
+    (t) => t.status === TeacherStatus.ON_LEAVE
   ).length;
 
   const stats = [

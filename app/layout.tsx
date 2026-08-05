@@ -1,7 +1,12 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+// Neon's auth UI ships its own utility bundle that includes a second `.hidden`
+// rule. It must be imported BEFORE globals.css, or it wins the cascade and
+// breaks every `hidden md:flex` / `hidden lg:flex` in the app — including the
+// marketing navbar's desktop menu.
+import "@neondatabase/auth-ui/css";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-primary",
@@ -61,19 +66,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      afterSignOutUrl={"/"}
-      signInUrl="/login"
-      signUpUrl="/signup"
-    >
-      <html lang="en">
-        <body
-          className={`${inter.variable} ${jakarta.variable} font-primary antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    // next-themes (inside the auth UI provider) writes to <html> before React
+    // hydrates, so this attribute is required to avoid a mismatch warning.
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${inter.variable} ${jakarta.variable} font-primary antialiased`}
+      >
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }

@@ -2,13 +2,7 @@
 
 import React from "react";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { FormDrawer, DrawerForm } from "@/components/common/form-drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,20 +15,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { UserPlus } from "lucide-react";
 
-export interface Student {
-  id: string | number;
-  name: string;
-  registrationNumber: string;
-  gender: string;
-  guardianName: string;
-  guardianPhone: string;
-  attendance: {
-    present: number;
-    absent?: number;
-    late?: number;
-    total: number;
-  };
-}
+import { createStudent } from "@/lib/actions/students";
+import { runAction } from "@/lib/actions/run-action";
+import { useToast } from "@/hooks/use-toast";
+import { Gender, genderLabel } from "@/types/student";
 
 interface FormErrors {
   name?: string;
@@ -44,12 +28,10 @@ interface FormErrors {
   guardianPhone?: string;
 }
 
-export function AddStudentModal({
-  onAddStudent,
-}: {
-  onAddStudent: (student: Student) => void;
-}) {
+export function AddStudentModal({ classRoomId }: { classRoomId: string }) {
   const [open, setOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     registrationNumber: "",
@@ -82,8 +64,13 @@ export function AddStudentModal({
         if (!value) return "Gender is required";
         return "";
 
+      // A guardian is optional, but half a contact is worse than none — if
+      // either field is filled, both must be.
       case "guardianName":
-        if (!value.trim()) return "Guardian name is required";
+        if (!value.trim())
+          return formData.guardianPhone.trim()
+            ? "Add the guardian's name too"
+            : "";
         if (value.trim().length < 2)
           return "Guardian name must be at least 2 characters";
         if (!/^[a-zA-Z\s]*$/.test(value))
@@ -91,8 +78,10 @@ export function AddStudentModal({
         return "";
 
       case "guardianPhone":
-        if (!value.trim()) return "Guardian phone is required";
-        // Basic phone number validation - adjust regex based on your needs
+        if (!value.trim())
+          return formData.guardianName.trim()
+            ? "Add the guardian's phone number too"
+            : "";
         if (!/^\+?[\d\s-]{10,}$/.test(value)) {
           return "Please enter a valid phone number (minimum 10 digits)";
         }
@@ -119,7 +108,7 @@ export function AddStudentModal({
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -132,16 +121,25 @@ export function AddStudentModal({
       return;
     }
 
-    const newStudent: Student = {
-      id: Math.random().toString(36).substr(2, 9),
+    setIsSaving(true);
+    const result = await runAction(() =>
+      createStudent(classRoomId, {
       ...formData,
-      attendance: {
-        present: 0,
-        total: 0,
-      },
-    };
+        gender: formData.gender as Gender,
+      })
+    );
+    setIsSaving(false);
 
-    onAddStudent(newStudent);
+    if (!result.ok) {
+      // Keep the dialog open so the entered details aren't lost.
+      toast({
+        title: "Could not add student",
+        description: result.error,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setFormData({
       name: "",
       registrationNumber: "",
@@ -186,18 +184,52 @@ export function AddStudentModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <FormDrawer
+      open={open}
+      onOpenChange={setOpen}
+      title="Add New Student"
+      description="Enrol a student into this class."
+      trigger={
         <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600">
           <UserPlus className="h-4 w-4" />
           Add New Student
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add New Student</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      }
+    >
+      <DrawerForm
+        onSubmit={handleSubmit}
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSaving}
+              onClick={() => {
+                setOpen(false);
+                setErrors({});
+                setTouched({});
+                setFormData({
+                  name: "",
+                  registrationNumber: "",
+                  gender: "",
+                  guardianName: "",
+                  guardianPhone: "",
+                });
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSaving}
+              className="bg-blue-600 text-white hover:bg-blue-700"
+            >
+              {isSaving ? "Adding..." : "Add Student"}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
             <Input
@@ -257,9 +289,11 @@ export function AddStudentModal({
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                {Object.values(Gender).map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {genderLabel[value]}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.gender && touched.gender && (
@@ -268,11 +302,10 @@ export function AddStudentModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianName">Guardian Name</Label>
+            <Label htmlFor="guardianName">Guardian Name (optional)</Label>
             <Input
               id="guardianName"
               name="guardianName"
-              required
               value={formData.guardianName}
               onChange={handleChange}
               onBlur={() => handleBlur("guardianName")}
@@ -293,7 +326,6 @@ export function AddStudentModal({
               id="guardianPhone"
               name="guardianPhone"
               type="tel"
-              required
               value={formData.guardianPhone}
               onChange={handleChange}
               onBlur={() => handleBlur("guardianPhone")}
@@ -308,29 +340,8 @@ export function AddStudentModal({
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setOpen(false);
-                setErrors({});
-                setTouched({});
-                setFormData({
-                  name: "",
-                  registrationNumber: "",
-                  gender: "",
-                  guardianName: "",
-                  guardianPhone: "",
-                });
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Add Student</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </DrawerForm>
+    </FormDrawer>
   );
 }
