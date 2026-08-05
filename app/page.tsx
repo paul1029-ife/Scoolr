@@ -16,6 +16,7 @@ import {
   Zap,
   BarChart,
 } from "lucide-react";
+import Link from "next/link";
 import Navbar from "../components/NavBar";
 import { authClient } from "@/lib/auth/client";
 import "./globals.css";
@@ -64,12 +65,18 @@ export default function Home() {
               effortlessly manage staff, students, finances, and events.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#demo"
+              {/*
+                Self-serve entry point. /signup sends a new account on to
+                /start to register the school, and from there into onboarding.
+                Anyone already signed in is redirected to /dashboard by
+                /signup itself, so one link covers both cases.
+              */}
+              <Link
+                href="/signup"
                 className="px-8 py-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-300 flex items-center justify-center"
               >
-                Request Demo <ArrowRight size={16} className="ml-2" />
-              </a>
+                Set up your school <ArrowRight size={16} className="ml-2" />
+              </Link>
               <a
                 href="#pricing"
                 className="px-8 py-4 bg-white text-blue-700 rounded-lg font-bold hover:bg-gray-100 transition duration-300 flex items-center justify-center"
