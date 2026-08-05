@@ -36,7 +36,7 @@ scoolr/
 ├── types/              # TypeScript types
 ├── utils/              # Helper functions
 ├── styles/             # Global styles
-├── middleware.ts       # Clerk auth middleware
+├── proxy.ts            # Neon Auth route guard (Next 16 proxy convention)
 └── README.md
 ```
 
