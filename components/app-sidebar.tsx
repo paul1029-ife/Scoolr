@@ -136,6 +136,9 @@ export function AppSidebar({
   const signOut = async () => {
     await authClient.signOut();
     // Full document load so no cached authenticated RSC payload survives.
+    // router.push() would keep the client cache, briefly showing the signed-in
+    // UI to someone who has just signed out, so the rule is knowingly ignored.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.assign("/");
   };
 

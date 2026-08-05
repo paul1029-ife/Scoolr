@@ -95,9 +95,15 @@ function ChartEmptyState({ message }: { message: string }) {
 export function DashboardPageContent({ data }: { data: DashboardData }) {
   const [showDevAlert, setShowDevAlert] = useState(false);
 
+  // localStorage does not exist while this renders on the server, so whether
+  // the notice has already been seen genuinely cannot be known until after
+  // mount. Reading it in a lazy state initialiser instead would make the first
+  // client render disagree with the server HTML — a hydration mismatch — so
+  // the extra render this costs is the price of a correct one.
   useEffect(() => {
     const hasSeenAlert = localStorage.getItem("hasSeenDevAlert");
     if (!hasSeenAlert) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowDevAlert(true);
       localStorage.setItem("hasSeenDevAlert", "true");
     }

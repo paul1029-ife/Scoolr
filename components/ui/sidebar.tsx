@@ -650,10 +650,19 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean
   }
 >(({ className, showIcon = false, ...props }, ref) => {
-  // Random width between 50 to 90%.
+  // Varied width between 50 and 90%, so a column of skeletons looks like text
+  // rather than a stack of identical bars. Derived from the instance id rather
+  // than Math.random(): random during render is impure, and it also produced a
+  // different width on the server than on the client, which is a hydration
+  // mismatch on every skeleton rendered.
+  const id = React.useId()
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+    let hash = 0
+    for (let index = 0; index < id.length; index += 1) {
+      hash = (hash * 31 + id.charCodeAt(index)) | 0
+    }
+    return `${(Math.abs(hash) % 41) + 50}%`
+  }, [id])
 
   return (
     <div
