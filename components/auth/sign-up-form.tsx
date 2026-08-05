@@ -7,6 +7,11 @@ import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 
 import { authClient } from "@/lib/auth/client";
+import {
+  authErrorMessage,
+  authErrorStatus,
+  describeAuthFailure,
+} from "@/lib/auth/auth-error";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -53,31 +58,51 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
   const onSubmit = async (values: SignUpValues) => {
     setFormError(null);
 
-    const { data, error } = await authClient.signUp.email({
-      name: values.name,
-      email: values.email,
-      password: values.password,
-    });
+    const fallback = "Could not create your account. Please try again.";
 
-    if (error) {
-      // 422 is the usual "already registered" response.
-      setFormError(
-        error.status === 422
-          ? "An account with that email already exists. Try signing in instead."
-          : error.message ?? "Could not create your account. Please try again."
-      );
-      return;
+    /**
+     * Shared by the resolved and thrown paths so a failure reads the same
+     * either way. 422 is the usual "already registered" response; anything
+     * else the server bothered to explain (a password policy, say) is worth
+     * showing verbatim.
+     */
+    const messageFor = (cause: unknown) => {
+      const specific = describeAuthFailure(cause);
+      if (specific) return specific;
+
+      return authErrorStatus(cause) === 422
+        ? "An account with that email already exists. Try signing in instead."
+        : authErrorMessage(cause) ?? fallback;
+    };
+
+    try {
+      const { data, error } = await authClient.signUp.email({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        setFormError(messageFor(error));
+        return;
+      }
+
+      if (!data) {
+        setFormError(
+          "Account created, but no session was returned. Try signing in."
+        );
+        return;
+      }
+
+      // Full document load rather than router.push() — see sign-in-form.tsx.
+      window.location.assign(redirectTo);
+    } catch (cause) {
+      // This is the path that actually runs: authClient throws on every failed
+      // response rather than resolving with `{ error }`. Without it the form
+      // just sat there after a rejected sign-up.
+      console.error("Sign-up failed", cause);
+      setFormError(messageFor(cause));
     }
-
-    if (!data) {
-      setFormError(
-        "Account created, but no session was returned. Try signing in."
-      );
-      return;
-    }
-
-    // Full document load rather than router.push() — see sign-in-form.tsx.
-    window.location.assign(redirectTo);
   };
 
   const isSubmitting = form.formState.isSubmitting;
