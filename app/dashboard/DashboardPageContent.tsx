@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,15 +29,6 @@ import {
   PageBody,
   PageHeader,
 } from "@/components/common/page-header";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
 
 import { formatNairaCompact } from "@/types/billing";
 import type { DashboardData } from "@/lib/queries/dashboard";
@@ -167,22 +158,6 @@ const quickActions = [
 ];
 
 export function DashboardPageContent({ data }: { data: DashboardData }) {
-  const [showDevAlert, setShowDevAlert] = useState(false);
-
-  // localStorage does not exist while this renders on the server, so whether
-  // the notice has already been seen genuinely cannot be known until after
-  // mount. Reading it in a lazy state initialiser instead would make the first
-  // client render disagree with the server HTML — a hydration mismatch — so
-  // the extra render this costs is the price of a correct one.
-  useEffect(() => {
-    const hasSeenAlert = localStorage.getItem("hasSeenDevAlert");
-    if (!hasSeenAlert) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowDevAlert(true);
-      localStorage.setItem("hasSeenDevAlert", "true");
-    }
-  }, []);
-
   const {
     totalStudents,
     totalTeachers,
@@ -201,23 +176,6 @@ export function DashboardPageContent({ data }: { data: DashboardData }) {
 
   return (
     <>
-      <AlertDialog open={showDevAlert} onOpenChange={setShowDevAlert}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Development status</AlertDialogTitle>
-            <AlertDialogDescription>
-              Welcome to Scoolr. This application is currently under
-              development. Figures on this page are read from your school&apos;s
-              own records, so they will stay empty until you add staff,
-              students, attendance and payments.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>Got it</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
       <PageHeader
         title="Overview"
         description="Attendance, fees and activity across your school"
