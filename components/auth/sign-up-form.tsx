@@ -221,7 +221,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white hover:bg-blue-700"
+          className="w-full"
         >
           {isSubmitting ? (
             <>

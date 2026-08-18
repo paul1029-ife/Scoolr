@@ -114,7 +114,6 @@ export const AddEventModal = React.memo(
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 {isSaving ? "Creating..." : "Create Event"}
               </Button>

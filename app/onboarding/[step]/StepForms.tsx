@@ -106,7 +106,6 @@ function StepActions({
       <Button
         type="submit"
         disabled={isSaving}
-        className="bg-blue-600 text-white hover:bg-blue-700"
       >
         {isSaving ? "Saving…" : label}
       </Button>
@@ -799,7 +798,7 @@ export function SubjectsStep({ subjectCount }: { subjectCount: number }) {
                   aria-pressed={isOn}
                   className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                     isOn
-                      ? "border-blue-600 bg-blue-600 text-white"
+                      ? "border-blue-600"
                       : "border-gray-300 text-gray-700 hover:border-gray-400"
                   }`}
                 >
@@ -818,7 +817,6 @@ export function SubjectsStep({ subjectCount }: { subjectCount: number }) {
         <Button
           type="submit"
           disabled={isSaving || selected.size === 0}
-          className="bg-blue-600 text-white hover:bg-blue-700"
         >
           {isSaving ? "Saving…" : "Add subjects and continue"}
         </Button>

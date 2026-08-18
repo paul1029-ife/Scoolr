@@ -123,7 +123,7 @@ export function OnboardingShell({
             <Button
               onClick={finish}
               disabled={!allRequiredComplete || isFinishing}
-              className="w-full bg-blue-600 text-white hover:bg-blue-700"
+              className="w-full"
             >
               {isFinishing ? (
                 <>

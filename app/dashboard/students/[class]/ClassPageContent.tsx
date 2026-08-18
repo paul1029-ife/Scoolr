@@ -59,14 +59,14 @@ export function ClassPageContent({
   return (
     <div className="mx-auto space-y-8">
       {/* Header Section */}
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
+      <div className="border-b px-3 border-border bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
         <div className="flex justify-center items-center gap-2">
           <Link href="/dashboard/students">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-md text-gray-800 font-medium tracking-tight">
+          <h1 className="text-[15px] font-semibold tracking-tight text-foreground">
             {className}
           </h1>
         </div>
@@ -162,7 +162,7 @@ export function ClassPageContent({
                         {percentage === null ? (
                           <Badge variant="secondary">No data</Badge>
                         ) : percentage >= 75 ? (
-                          <Badge className="bg-green-100 text-green-700">
+                          <Badge dot variant="success">
                             <CheckCircle2 className="h-3 w-3 mr-1" />
                             Good Standing
                           </Badge>

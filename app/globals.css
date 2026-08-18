@@ -2,63 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
+    /* Surfaces -------------------------------------------------------------
+       `background` is the plain white used by marketing and auth pages.
+       `canvas` is the slightly recessed grey the dashboard shell sits on, so
+       white panels read as raised without needing a shadow. */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
+    --canvas: 240 20% 98.4%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 0 0% 98%;
+
+    /* Brand ---------------------------------------------------------------
+       Matches Tailwind's blue-600, which the app already used by hand in
+       dozens of places, so `bg-primary` and `bg-blue-600` are now the same
+       colour and the two can be reconciled without a visual jump. */
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 0 0% 100%;
+
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+
+    /* Status --------------------------------------------------------------
+       Each has a `-subtle` companion for backgrounds, so status never needs a
+       hand-picked `bg-green-100` at the call site. */
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-subtle: 0 85.7% 97.3%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 0 0% 100%;
+    --success-subtle: 138.5 76.5% 96.7%;
+    --warning: 32.1 94.6% 43.7%;
+    --warning-foreground: 0 0% 100%;
+    --warning-subtle: 48 96% 95.1%;
+
+    /* Lines ---------------------------------------------------------------
+       `border` is the everyday hairline; `border-strong` separates whole
+       regions (page header from content, table header from body). */
     --border: 240 5.9% 90%;
+    --border-strong: 240 5.9% 84%;
     --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --ring: 221.2 83.2% 53.3%;
+
+    /* Charts --------------------------------------------------------------
+       Brand blue plus a restrained supporting set. Deliberately not five
+       competing hues: most charts here plot one or two series. */
+    --chart-1: 221.2 83.2% 53.3%;
+    --chart-2: 142.1 70.6% 45.3%;
+    --chart-3: 240 4% 65%;
+    --chart-4: 32.1 94.6% 43.7%;
+    --chart-5: 262.1 83.3% 57.8%;
+
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --canvas: 240 10% 3.9%;
+    --card: 240 6% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 217.2 91.2% 59.8%; /* Updated to match Tailwind's blue-600 */
-    --primary-foreground: 240 5.9% 10%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 40%;
     --destructive-foreground: 0 0% 98%;
+    --destructive-subtle: 0 62.8% 15%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 0 0% 100%;
+    --success-subtle: 142 40% 14%;
+    --warning: 32.1 94.6% 43.7%;
+    --warning-foreground: 0 0% 100%;
+    --warning-subtle: 32 40% 14%;
     --border: 240 3.7% 15.9%;
+    --border-strong: 240 3.7% 22%;
     --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --ring: 217.2 91.2% 59.8%;
+    --chart-1: 217.2 91.2% 59.8%;
+    --chart-2: 142.1 70.6% 45.3%;
+    --chart-3: 240 5% 45%;
+    --chart-4: 32.1 94.6% 43.7%;
+    --chart-5: 262.1 83.3% 57.8%;
   }
 }
 
@@ -66,7 +104,42 @@ body {
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-primary antialiased;
+    /* Inter's default figures are proportional, which makes numbers jitter as
+       metrics update. `tnum` locks the advance width; `cv11` is Inter's
+       single-storey shapes for a cleaner small-size read. */
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings carry the hierarchy through weight and tracking rather than size
+     alone, so the dashboard stays dense without losing structure. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  /* Numbers in metrics, tables and charts should never reflow while updating. */
+  .tabular,
+  th,
+  td {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* One focus treatment everywhere, keyboard-only, in the brand colour. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer utilities {
+  /* Used by the dashboard shell and any full-bleed panel that needs to sit on
+     the recessed background. */
+  .bg-canvas {
+    background-color: hsl(var(--canvas));
   }
 }

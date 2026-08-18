@@ -30,7 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import SimpleCard from "@/components/common/simple-card";
+import { Metric, MetricGroup } from "@/components/common/metric";
+import { PageBody, PageHeader } from "@/components/common/page-header";
 
 import { PaymentModal, type StudentOption } from "./PaymentModal";
 import { useCan } from "@/components/auth/permissions-provider";
@@ -89,47 +90,47 @@ export function BillingsPageContent({
   }));
 
   return (
-    <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-        <h1 className="text-md font-medium tracking-tight">Manage Billings</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Export Report
-          </Button>
-          {canManage && (
-            <Button
-              className="flex items-center gap-2 bg-blue-600"
-              onClick={() => setIsPaymentModalOpen(true)}
-            >
-              <PlusCircle className="h-4 w-4" />
-              Record Payment
+    <>
+      <PageHeader
+        title="Billing"
+        description="Fees expected, collected and outstanding"
+        actions={
+          <>
+            <Button variant="outline">
+              <Download />
+              <span className="max-sm:sr-only">Export report</span>
             </Button>
-          )}
-        </div>
-      </div>
-      <div className="px-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <SimpleCard
-            title="Total Collected"
+            {canManage && (
+              <Button onClick={() => setIsPaymentModalOpen(true)}>
+                <PlusCircle />
+                Record payment
+              </Button>
+            )}
+          </>
+        }
+      />
+      <PageBody>
+        <MetricGroup columns={3} className="mb-5">
+          <Metric
+            label="Total collected"
             value={formatNairaCompact(totalCollected)}
           />
-          <SimpleCard
-            title="Collection Rate"
+          <Metric
+            label="Collection rate"
             value={rate === null ? "—" : `${rate.toFixed(1)}%`}
           />
-          <SimpleCard
-            title="Outstanding"
+          <Metric
+            label="Outstanding"
             value={formatNairaCompact(outstanding)}
           />
-        </div>
+        </MetricGroup>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Card>
               <CardHeader className="border-b">
                 <div className="flex flex-col md:flex-row gap-4 justify-between">
-                  <h2 className="text-xl">Recent Payments</h2>
+                  <h2 className="text-sm font-semibold tracking-tight text-foreground">Recent Payments</h2>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
                       <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -208,8 +209,8 @@ export function BillingsPageContent({
                           <Badge
                             className={
                               payment.status === PaymentStatus.PAID
-                                ? "bg-green-100 text-green-700"
-                                : "bg-yellow-100 text-yellow-700"
+                                ? "border-success/20 bg-success-subtle text-success"
+                                : "border-warning/20 bg-warning-subtle text-warning"
                             }
                           >
                             {payment.status === PaymentStatus.PAID ? (
@@ -231,7 +232,7 @@ export function BillingsPageContent({
           <Card>
             <CardHeader className="border-b">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl">Fee Structure</h2>
+                <h2 className="text-sm font-semibold tracking-tight text-foreground">Fee Structure</h2>
               </div>
             </CardHeader>
             <CardContent className="p-4">
@@ -250,13 +251,13 @@ export function BillingsPageContent({
                       className="p-4 border rounded-lg space-y-2"
                     >
                       <div className="flex justify-between items-center">
-                        <h3 className="">{fee.className}</h3>
+                        <h3>{fee.className}</h3>
                         <Badge variant="outline">
                           {fee.totalStudents}{" "}
                           {fee.totalStudents === 1 ? "student" : "students"}
                         </Badge>
                       </div>
-                      <div className="text-md font-medium text-muted-foreground">
+                      <div className="text-sm font-medium text-muted-foreground">
                         Termly Fee:{" "}
                         {fee.termlyFee > 0 ? formatNaira(fee.termlyFee) : "Not set"}
                       </div>
@@ -270,7 +271,7 @@ export function BillingsPageContent({
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-blue-600 rounded-full"
+                          className="h-full rounded-full"
                           // Clamped: over-payment must not overflow the track.
                           style={{
                             width: `${Math.min(classRate ?? 0, 100)}%`,
@@ -292,8 +293,8 @@ export function BillingsPageContent({
           classRooms={classRooms}
           termId={selectedTermId}
         />
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }
 

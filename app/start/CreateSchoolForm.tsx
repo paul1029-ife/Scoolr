@@ -65,7 +65,7 @@ export function CreateSchoolForm({ email }: { email: string }) {
       <Button
         type="submit"
         disabled={isSaving || name.trim().length < 3}
-        className="w-full bg-blue-600 text-white hover:bg-blue-700"
+        className="w-full"
       >
         {isSaving ? (
           <>

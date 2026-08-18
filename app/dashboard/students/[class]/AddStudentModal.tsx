@@ -190,7 +190,7 @@ export function AddStudentModal({ classRoomId }: { classRoomId: string }) {
       title="Add New Student"
       description="Enrol a student into this class."
       trigger={
-        <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-600">
+        <Button className="flex items-center gap-2 hover:">
           <UserPlus className="h-4 w-4" />
           Add New Student
         </Button>
@@ -222,7 +222,6 @@ export function AddStudentModal({ classRoomId }: { classRoomId: string }) {
             <Button
               type="submit"
               disabled={isSaving}
-              className="bg-blue-600 text-white hover:bg-blue-700"
             >
               {isSaving ? "Adding..." : "Add Student"}
             </Button>

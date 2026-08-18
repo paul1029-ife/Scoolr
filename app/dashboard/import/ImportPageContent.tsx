@@ -35,10 +35,10 @@ import {
 import { MAX_BYTES, MAX_ROWS, type ImportAnalysis } from "@/lib/import/analyse";
 
 const STATUS_STYLE = {
-  create: "bg-green-100 text-green-800",
-  update: "bg-blue-100 text-blue-800",
+  create: "border-success/20 bg-success-subtle text-success",
+  update: "border-primary/20 bg-primary/10 text-primary",
   duplicate: "bg-amber-100 text-amber-800",
-  invalid: "bg-red-100 text-red-800",
+  invalid: "border-destructive/20 bg-destructive-subtle text-destructive",
 } as const;
 
 const STATUS_LABEL = {
@@ -158,12 +158,12 @@ export function ImportPageContent({
   if (!entity) {
     return (
       <div className="mx-auto space-y-8">
-        <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-          <h1 className="text-md font-medium tracking-tight">Import Data</h1>
+        <div className="border-b px-3 border-border bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
+          <h1 className="text-[15px] font-semibold tracking-tight text-foreground">Import Data</h1>
         </div>
 
         <div className="px-3">
-          <p className="mb-6 max-w-2xl text-sm text-gray-600">
+          <p className="mb-6 max-w-2xl text-sm text-muted-foreground">
             Bring existing records in from a spreadsheet. Download the template,
             fill it in, and you&apos;ll see exactly what will change before
             anything is saved.
@@ -173,15 +173,15 @@ export function ImportPageContent({
             {IMPORT_ENTITIES.map((item) => (
               <Card
                 key={item.entity}
-                className="cursor-pointer border-0 shadow-sm transition-shadow hover:shadow-md"
+                className="cursor-pointer border-0 shadow-sm transition-shadow hover:shadow-sm"
                 onClick={() => setEntity(item.entity)}
               >
                 <CardContent className="p-5">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                     <FileSpreadsheet className="h-5 w-5 text-blue-600" />
                   </div>
                   <h2 className="font-medium text-gray-900">{item.label}</h2>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {item.description}
                   </p>
                 </CardContent>
@@ -205,7 +205,7 @@ export function ImportPageContent({
                         <p className="truncate text-sm font-medium text-gray-900">
                           {job.label} · {job.fileName}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           {new Date(job.createdAt).toLocaleString("en-GB", {
                             day: "numeric",
                             month: "short",
@@ -246,7 +246,7 @@ export function ImportPageContent({
 
   return (
     <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
+      <div className="border-b px-3 border-border bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -259,7 +259,7 @@ export function ImportPageContent({
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-md font-medium tracking-tight">
+          <h1 className="text-[15px] font-semibold tracking-tight text-foreground">
             Import {definition?.label}
           </h1>
         </div>
@@ -287,7 +287,7 @@ export function ImportPageContent({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase text-gray-500">
+                  <tr className="text-left text-xs uppercase text-muted-foreground">
                     <th className="pb-2 pr-4">Column</th>
                     <th className="pb-2 pr-4">Required</th>
                     <th className="pb-2 pr-4">Notes</th>
@@ -306,13 +306,13 @@ export function ImportPageContent({
                         {column.required ? (
                           <span className="text-red-600">Yes</span>
                         ) : (
-                          <span className="text-gray-400">No</span>
+                          <span className="text-muted-foreground">No</span>
                         )}
                       </td>
-                      <td className="py-2 pr-4 text-gray-600">
+                      <td className="py-2 pr-4 text-muted-foreground">
                         {column.hint || "—"}
                       </td>
-                      <td className="py-2 text-gray-600">{column.example}</td>
+                      <td className="py-2 text-muted-foreground">{column.example}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -338,13 +338,12 @@ export function ImportPageContent({
               <Button
                 onClick={() => fileInput.current?.click()}
                 disabled={isWorking}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 <Upload className="mr-2 h-4 w-4" />
                 {isWorking ? "Reading…" : "Choose CSV file"}
               </Button>
               {fileName && (
-                <span className="text-sm text-gray-600">{fileName}</span>
+                <span className="text-sm text-muted-foreground">{fileName}</span>
               )}
               {analysis && (
                 <Button variant="ghost" onClick={reset} disabled={isWorking}>
@@ -352,7 +351,7 @@ export function ImportPageContent({
                 </Button>
               )}
             </div>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-muted-foreground">
               Up to {MAX_ROWS.toLocaleString()} rows per file. Nothing is saved
               until you confirm.
             </p>
@@ -373,7 +372,7 @@ export function ImportPageContent({
               ).map(([key, count, label]) => (
                 <Card key={key} className="border-0 shadow-sm">
                   <CardContent className="p-4">
-                    <p className="text-xs text-gray-500">{label}</p>
+                    <p className="text-xs text-muted-foreground">{label}</p>
                     <p className="mt-1 text-2xl font-semibold text-gray-900">
                       {count}
                     </p>
@@ -394,7 +393,7 @@ export function ImportPageContent({
               </div>
             )}
 
-            <Card className="mb-6 border-0 shadow-sm overflow-hidden">
+            <Card className="mb-6 overflow-hidden">
               <div className="border-b bg-gray-100 px-5 py-3">
                 <h2 className="text-sm font-semibold text-gray-900">
                   Preview — {analysis.summary.total} row
@@ -420,7 +419,7 @@ export function ImportPageContent({
                             row.status === "invalid" ? "bg-red-50/50" : undefined
                           }
                         >
-                          <TableCell className="text-gray-500">
+                          <TableCell className="text-muted-foreground">
                             {row.line}
                           </TableCell>
                           <TableCell>
@@ -444,7 +443,7 @@ export function ImportPageContent({
                           ))}
                         </TableRow>
                         {(Object.keys(row.errors).length > 0 || row.note) && (
-                          <TableRow className="bg-gray-50">
+                          <TableRow className="bg-muted/40">
                             <TableCell />
                             <TableCell
                               colSpan={analysis.columns.length + 1}
@@ -462,7 +461,7 @@ export function ImportPageContent({
                                 </span>
                               ))}
                               {row.note && (
-                                <span className="text-gray-600">{row.note}</span>
+                                <span className="text-muted-foreground">{row.note}</span>
                               )}
                             </TableCell>
                           </TableRow>
@@ -475,7 +474,7 @@ export function ImportPageContent({
             </Card>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {importableCount > 0 ? (
                   <>
                     <CheckCircle2 className="mr-1 inline h-4 w-4 text-green-600" />
@@ -500,7 +499,6 @@ export function ImportPageContent({
               <Button
                 onClick={handleCommit}
                 disabled={isWorking || importableCount === 0}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 {isWorking
                   ? "Importing…"

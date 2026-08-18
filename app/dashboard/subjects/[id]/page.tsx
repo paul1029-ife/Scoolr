@@ -35,19 +35,19 @@ export default async function SubjectDetailPage({
   return (
     <div className="container mx-auto space-y-8 max-w-7xl">
       {/* Header Section */}
-      <div className="border-b px-4 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-3 items-center justify-between z-10">
+      <div className="border-b px-4 border-border bg-white rounded-t-md flex sticky top-0 py-3 items-center justify-between z-10">
         <div className="flex justify-center items-center gap-2">
           <Link href="/dashboard/subjects">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-md text-gray-800 font-medium tracking-tight">
+          <h1 className="text-[15px] font-semibold tracking-tight text-foreground">
             {subject.name}
           </h1>
         </div>
 
-        <Button className="flex items-center gap-2 bg-blue-600">
+        <Button className="flex items-center gap-2">
           <Edit className="h-4 w-4" />
           Edit Subject
         </Button>
@@ -59,7 +59,7 @@ export default async function SubjectDetailPage({
         <div className="lg:col-span-2 space-y-6">
           <Card className="bg-gray-100 shadow-sm">
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Overview</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Overview</h2>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
@@ -69,7 +69,7 @@ export default async function SubjectDetailPage({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Users className="h-5 w-5 text-blue-700" />
                     </div>
                     <div>
@@ -79,7 +79,7 @@ export default async function SubjectDetailPage({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Building2 className="h-5 w-5 text-green-700" />
                     </div>
                     <div>
@@ -89,7 +89,7 @@ export default async function SubjectDetailPage({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Calendar className="h-5 w-5 text-purple-700" />
                     </div>
                     <div>
@@ -101,7 +101,7 @@ export default async function SubjectDetailPage({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Clock className="h-5 w-5 text-yellow-700" />
                     </div>
                     <div>
@@ -116,7 +116,7 @@ export default async function SubjectDetailPage({
 
           <Card className="bg-gray-100 shadow-sm">
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Course Objectives</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Course Objectives</h2>
             </CardHeader>
             <CardContent className="p-6">
               {subject.objectives.length === 0 ? (
@@ -143,7 +143,7 @@ export default async function SubjectDetailPage({
         <div className="space-y-6">
           <Card className="bg-gray-100 shadow-sm">
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Subject Information</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Subject Information</h2>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div>
@@ -175,7 +175,7 @@ export default async function SubjectDetailPage({
 
           <Card className="bg-gray-100 shadow-sm">
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Course Materials</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Course Materials</h2>
             </CardHeader>
             <CardContent className="p-6">
               {subject.materials.length === 0 ? (
@@ -197,7 +197,7 @@ export default async function SubjectDetailPage({
 
           <Card className="bg-gray-100 shadow-sm">
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Prerequisites</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Prerequisites</h2>
             </CardHeader>
             <CardContent className="p-6">
               {subject.prerequisites.length === 0 ? (

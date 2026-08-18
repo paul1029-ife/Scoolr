@@ -92,7 +92,7 @@ export default async function InvitePage({
         tone="info"
         title="Already accepted"
         action={
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
+          <Button asChild>
             <Link href="/login">Sign in</Link>
           </Button>
         }
@@ -130,7 +130,7 @@ export default async function InvitePage({
         title={`Join ${invitation.school.name}`}
         action={
           <div className="flex flex-col gap-2">
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild>
               <Link href={`/signup?next=/invite/${token}`}>
                 Create your account
               </Link>

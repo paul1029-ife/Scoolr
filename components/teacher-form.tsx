@@ -186,7 +186,6 @@ export function TeacherForm({ teacher, onClose }: TeacherFormProps) {
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-blue-600 text-white hover:bg-blue-700"
             >
               {isPending
                 ? "Saving..."

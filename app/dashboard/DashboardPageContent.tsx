@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   XAxis,
@@ -12,7 +11,6 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Legend,
   Area,
   AreaChart,
 } from "recharts";
@@ -22,10 +20,15 @@ import {
   CalendarDays,
   BookOpen,
   Receipt,
-  Bell,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
-import StatCard from "@/components/common/stat-card";
+import { Metric, MetricGroup } from "@/components/common/metric";
+import {
+  EmptyState,
+  PageBody,
+  PageHeader,
+} from "@/components/common/page-header";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -45,6 +48,52 @@ interface CustomTooltipProps {
   label?: string;
 }
 
+/**
+ * Chart tooltips share the app's popover language — same border, radius and
+ * type scale as a dropdown — so they read as part of the interface rather than
+ * as something the charting library brought with it.
+ */
+function ChartTooltipShell({
+  label,
+  children,
+}: {
+  label?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-[9rem] rounded-md border border-border bg-popover p-2.5 shadow-sm">
+      <p className="mb-1.5 text-xs font-medium text-foreground">{label}</p>
+      <div className="flex flex-col gap-1">{children}</div>
+    </div>
+  );
+}
+
+function TooltipRow({
+  swatch,
+  name,
+  value,
+}: {
+  swatch?: string;
+  name: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 text-xs">
+      <span className="flex items-center gap-1.5 text-muted-foreground">
+        {swatch && (
+          <span
+            className="size-1.5 rounded-full"
+            style={{ backgroundColor: swatch }}
+            aria-hidden
+          />
+        )}
+        {name}
+      </span>
+      <span className="font-medium tabular-nums text-foreground">{value}</span>
+    </div>
+  );
+}
+
 const AttendanceTooltip: React.FC<CustomTooltipProps> = ({
   active,
   payload,
@@ -52,10 +101,13 @@ const AttendanceTooltip: React.FC<CustomTooltipProps> = ({
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 border rounded shadow-md">
-        <p className="font-medium">{`${label}`}</p>
-        <p className="text-blue-600">{`Attendance: ${payload[0].value}%`}</p>
-      </div>
+      <ChartTooltipShell label={label}>
+        <TooltipRow
+          swatch="hsl(var(--chart-1))"
+          name="Attendance"
+          value={`${payload[0].value}%`}
+        />
+      </ChartTooltipShell>
     );
   }
   return null;
@@ -72,25 +124,47 @@ const FeeTooltip: React.FC<CustomTooltipProps> = ({
     const naira = (value: number) => `₦${value.toLocaleString("en-NG")}`;
 
     return (
-      <div className="bg-white p-3 border rounded shadow-md">
-        <p className="font-medium">{`${label}`}</p>
-        <p className="text-gray-900">{`Expected: ${naira(expected)}`}</p>
-        <p className="text-blue-600">{`Collected: ${naira(collected)}`}</p>
-        <p className="text-orange-500">{`Gap: ${naira(expected - collected)}`}</p>
-      </div>
+      <ChartTooltipShell label={label}>
+        <TooltipRow
+          swatch="hsl(var(--chart-3))"
+          name="Expected"
+          value={naira(expected)}
+        />
+        <TooltipRow
+          swatch="hsl(var(--chart-1))"
+          name="Collected"
+          value={naira(collected)}
+        />
+        <div className="mt-0.5 border-t border-border pt-1">
+          <TooltipRow name="Gap" value={naira(expected - collected)} />
+        </div>
+      </ChartTooltipShell>
     );
   }
   return null;
 };
 
+/** Shared axis styling so both charts sit on the same grid. */
+const axisTick = { fill: "hsl(var(--muted-foreground))", fontSize: 11 };
+const gridStroke = "hsl(var(--border))";
+
 /** Shown in place of a chart when there is nothing recorded yet. */
 function ChartEmptyState({ message }: { message: string }) {
   return (
-    <div className="flex h-[300px] items-center justify-center rounded-md border border-dashed">
-      <p className="max-w-xs text-center text-sm text-gray-500">{message}</p>
+    <div className="flex h-[260px] items-center justify-center">
+      <p className="max-w-xs text-center text-[13px] text-muted-foreground">
+        {message}
+      </p>
     </div>
   );
 }
+
+const quickActions = [
+  { href: "/dashboard/students", label: "Manage students", icon: Users },
+  { href: "/dashboard/subjects", label: "Manage subjects", icon: BookOpen },
+  // Was /dashboard/billing, which 404s — the route is billings.
+  { href: "/dashboard/billings", label: "Fee management", icon: Receipt },
+];
 
 export function DashboardPageContent({ data }: { data: DashboardData }) {
   const [showDevAlert, setShowDevAlert] = useState(false);
@@ -126,98 +200,94 @@ export function DashboardPageContent({ data }: { data: DashboardData }) {
   );
 
   return (
-    <div className="mx-auto space-y-8">
+    <>
       <AlertDialog open={showDevAlert} onOpenChange={setShowDevAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>🚧 Development Status</AlertDialogTitle>
+            <AlertDialogTitle>Development status</AlertDialogTitle>
             <AlertDialogDescription>
-              Welcome to Scoolr! This application is currently under
+              Welcome to Scoolr. This application is currently under
               development. Figures on this page are read from your school&apos;s
               own records, so they will stay empty until you add staff,
               students, attendance and payments.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction>Got it!</AlertDialogAction>
+            <AlertDialogAction>Got it</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Header Section */}
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
-        <div>
-          <h1 className="text-md text-gray-800 font-medium tracking-tight">
-            Overview
-          </h1>
-        </div>
-        <Button className="flex items-center gap-2 bg-blue-600">
-          <Bell className="h-4 w-4" />
-          Notifications
-        </Button>
-      </div>
+      <PageHeader
+        title="Overview"
+        description="Attendance, fees and activity across your school"
+      />
 
-      <div className="px-3 flex flex-col gap-3">
-        {/* Quick Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Total Students"
-            amount={totalStudents.toLocaleString()}
-            text={`Across ${totalClasses} ${
+      <PageBody className="space-y-5">
+        <MetricGroup>
+          <Metric
+            label="Students"
+            value={totalStudents.toLocaleString()}
+            hint={`Across ${totalClasses} ${
               totalClasses === 1 ? "class" : "classes"
             }`}
           />
-          <StatCard
-            title="Total Teachers"
-            amount={totalTeachers.toLocaleString()}
-            text="Staff on record"
+          <Metric
+            label="Teachers"
+            value={totalTeachers.toLocaleString()}
+            hint="Staff on record"
           />
-          <StatCard
-            title="Fee collection"
-            amount={
+          <Metric
+            label="Fee collection"
+            value={
               collectionRate === null ? "—" : `${collectionRate.toFixed(0)}%`
             }
-            text={
+            hint={
               collectionRate === null
                 ? "No fee structure set"
                 : `${formatNairaCompact(outstanding)} outstanding`
             }
           />
-          <StatCard
-            title="Attendance"
-            amount={
+          <Metric
+            label="Attendance"
+            value={
               attendanceRate === null ? "—" : `${attendanceRate.toFixed(0)}%`
             }
-            text={
+            hint={
               attendanceRate === null
                 ? "No attendance recorded"
                 : "All recorded days"
             }
           />
-        </div>
+        </MetricGroup>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
           <Card>
-            <CardHeader className="border-b border-gray-100">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Attendance Trends
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  Monthly student attendance percentage
+            <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+              <div className="space-y-1">
+                <CardTitle>Attendance trend</CardTitle>
+                <p className="text-[13px] text-muted-foreground">
+                  Monthly student attendance
                 </p>
               </div>
+              {attendanceRate !== null && (
+                <span className="text-right text-[13px] tabular-nums text-muted-foreground">
+                  <span className="block text-base font-semibold text-foreground">
+                    {attendanceRate.toFixed(1)}%
+                  </span>
+                  average
+                </span>
+              )}
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent>
               {attendanceTrend.length === 0 ? (
                 <ChartEmptyState message="No attendance recorded yet. Take attendance for a class to start building this trend." />
               ) : (
-                <div className="h-[300px]">
+                <div className="h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={attendanceTrend}
-                      margin={{ top: 20, right: 20, left: 10, bottom: 10 }}
+                      margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                     >
                       <defs>
                         <linearGradient
@@ -228,132 +298,138 @@ export function DashboardPageContent({ data }: { data: DashboardData }) {
                           y2="1"
                         >
                           <stop
-                            offset="5%"
-                            stopColor="#3b82f6"
-                            stopOpacity={0.6}
+                            offset="0%"
+                            stopColor="hsl(var(--chart-1))"
+                            stopOpacity={0.18}
                           />
                           <stop
-                            offset="95%"
-                            stopColor="#3b82f6"
-                            stopOpacity={0.05}
+                            offset="100%"
+                            stopColor="hsl(var(--chart-1))"
+                            stopOpacity={0}
                           />
                         </linearGradient>
                       </defs>
                       <CartesianGrid
-                        strokeDasharray="3 3"
                         vertical={false}
-                        stroke="#f0f0f0"
+                        stroke={gridStroke}
+                        strokeDasharray="0"
                       />
                       <XAxis
                         dataKey="month"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
-                        dy={10}
+                        tick={axisTick}
+                        dy={8}
                       />
                       <YAxis
                         domain={[0, 100]}
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
-                        width={30}
+                        tick={axisTick}
+                        width={44}
                         tickFormatter={(amount) => `${amount}%`}
                       />
-                      <Tooltip content={<AttendanceTooltip />} />
+                      <Tooltip
+                        content={<AttendanceTooltip />}
+                        cursor={{
+                          stroke: gridStroke,
+                          strokeWidth: 1,
+                        }}
+                      />
                       <Area
                         type="monotone"
                         dataKey="attendance"
-                        stroke="#3b82f6"
-                        strokeWidth={3}
+                        stroke="hsl(var(--chart-1))"
+                        strokeWidth={2}
                         fill="url(#attendanceGradient)"
-                        activeDot={{ r: 8, strokeWidth: 0, fill: "#2563eb" }}
+                        activeDot={{
+                          r: 4,
+                          strokeWidth: 2,
+                          stroke: "hsl(var(--background))",
+                          fill: "hsl(var(--chart-1))",
+                        }}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
-                </div>
-              )}
-              {attendanceRate !== null && (
-                <div className="flex justify-between items-center pt-4 mt-2 border-t border-gray-100">
-                  <div className="text-sm text-gray-500">
-                    Overall average:{" "}
-                    <span className="font-semibold text-gray-900">
-                      {attendanceRate.toFixed(1)}%
-                    </span>
-                  </div>
-                  <Link
-                    href="/dashboard/students"
-                    className="text-sm text-blue-600 font-medium"
-                  >
-                    View details
-                  </Link>
                 </div>
               )}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="border-b border-gray-100">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Fee Collection
-                </h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  Expected vs collected per term (₦)
+            <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+              <div className="space-y-1">
+                <CardTitle>Fee collection</CardTitle>
+                <p className="text-[13px] text-muted-foreground">
+                  Expected against collected, per term
                 </p>
               </div>
-              {collectionRate !== null && (
-                <div className="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
-                  {collectionRate.toFixed(0)}% collection rate
+              {/* A legend row, but as text — recharts' <Legend> adds its own
+                  spacing and typography that never matches the card. */}
+              {hasFeeData && (
+                <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-chart-3" />
+                    Expected
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-chart-1" />
+                    Collected
+                  </span>
                 </div>
               )}
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent>
               {!hasFeeData ? (
                 <ChartEmptyState message="No fees set or payments recorded yet. Set a termly fee per class and record a payment to see collection here." />
               ) : (
-                <div className="h-[300px]">
+                <div className="h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={feeCollection}
-                      margin={{ top: 20, right: 20, left: 10, bottom: 10 }}
-                      barGap={6}
+                      margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                      barGap={4}
                     >
                       <CartesianGrid
-                        strokeDasharray="3 3"
                         vertical={false}
-                        stroke="#f0f0f0"
+                        stroke={gridStroke}
+                        strokeDasharray="0"
                       />
                       <XAxis
                         dataKey="term"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
-                        dy={10}
+                        tick={axisTick}
+                        dy={8}
                       />
                       <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: "#6b7280", fontSize: 12 }}
-                        width={60}
+                        tick={axisTick}
+                        width={64}
                         tickFormatter={(value) =>
                           value >= 1_000_000
                             ? `₦${(value / 1_000_000).toFixed(1)}M`
                             : `₦${(value / 1000).toFixed(0)}K`
                         }
                       />
-                      <Tooltip content={<FeeTooltip />} />
-                      <Legend />
+                      <Tooltip
+                        content={<FeeTooltip />}
+                        cursor={{ fill: "hsl(var(--muted))" }}
+                      />
                       <Bar
                         dataKey="expected"
                         name="Expected"
-                        fill="#cbd5e1"
-                        radius={[4, 4, 0, 0]}
+                        fill="hsl(var(--chart-3))"
+                        radius={[3, 3, 0, 0]}
+                        maxBarSize={28}
                       />
                       <Bar
                         dataKey="collected"
                         name="Collected"
-                        fill="#3b82f6"
-                        radius={[4, 4, 0, 0]}
+                        fill="hsl(var(--chart-1))"
+                        radius={[3, 3, 0, 0]}
+                        maxBarSize={28}
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -363,126 +439,88 @@ export function DashboardPageContent({ data }: { data: DashboardData }) {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader className="border-b">
-              <h2 className="text-md text-gray-900">Quick Actions</h2>
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+          <Card className="xl:col-span-2">
+            <CardHeader className="border-b border-border">
+              <CardTitle>Recent activity</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-2">
-                <Link href="/dashboard/students">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200"
+            {recentActivities.length === 0 ? (
+              <EmptyState
+                icon={Activity}
+                title="Nothing has happened yet"
+                description="Events and payments will appear here as they are recorded."
+              />
+            ) : (
+              <ul className="divide-y divide-border">
+                {recentActivities.map((activity) => (
+                  <li
+                    key={`${activity.type}-${activity.id}`}
+                    className="flex items-center justify-between gap-3 px-5 py-3 transition-colors hover:bg-muted/40"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <Users className="h-4 w-4 text-blue-600" />
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                        {activity.type === "event" ? (
+                          <CalendarDays className="size-3.5" />
+                        ) : (
+                          <Receipt className="size-3.5" />
+                        )}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[13px] font-medium text-foreground">
+                          {activity.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(activity.date).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                            timeZone: "UTC",
+                          })}
+                        </p>
                       </div>
-                      <span className="font-medium">Manage Students</span>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </Button>
-                </Link>
-                <Link href="/dashboard/subjects">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-100 rounded-lg">
-                        <BookOpen className="h-4 w-4 text-green-600" />
-                      </div>
-                      <span className="font-medium">Manage Subjects</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </Button>
-                </Link>
-                {/* Was /dashboard/billing, which 404s — the route is billings. */}
-                <Link href="/dashboard/billings">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-purple-100 rounded-lg">
-                        <Receipt className="h-4 w-4 text-purple-600" />
-                      </div>
-                      <span className="font-medium">Fee Management</span>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
+                    <Badge
+                      dot
+                      variant={
+                        activity.status === "completed" ? "success" : "outline"
+                      }
+                      className="shrink-0 capitalize"
+                    >
+                      {activity.status}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Card>
 
-          {/* Recent Activities */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="border-b">
-              <h2 className="text-md text-gray-900">Recent Activities</h2>
+          <Card>
+            <CardHeader className="border-b border-border">
+              <CardTitle>Quick actions</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
-              {recentActivities.length === 0 ? (
-                <p className="py-6 text-center text-sm text-gray-500">
-                  Nothing has happened yet. Events and payments will appear
-                  here.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {recentActivities.map((activity) => (
-                    <div
-                      key={`${activity.type}-${activity.id}`}
-                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 ${
-                            activity.type === "event"
-                              ? "bg-purple-100"
-                              : "bg-green-100"
-                          } rounded-full`}
-                        >
-                          {activity.type === "event" ? (
-                            <CalendarDays className="h-4 w-4 text-purple-700" />
-                          ) : (
-                            <Receipt className="h-4 w-4 text-green-700" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">{activity.title}</p>
-                          <p className="text-sm text-gray-500">
-                            {new Date(activity.date).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                                timeZone: "UTC",
-                              }
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      <Badge
-                        className={
-                          activity.status === "completed"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-blue-100 text-blue-700"
-                        }
-                      >
-                        {activity.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
+            <div className="divide-y divide-border">
+              {quickActions.map(({ href, label, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="group flex items-center justify-between gap-3 px-5 py-3 transition-colors hover:bg-muted/40"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors group-hover:text-foreground">
+                      <Icon className="size-3.5" />
+                    </span>
+                    <span className="text-[13px] font-medium text-foreground">
+                      {label}
+                    </span>
+                  </span>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              ))}
+            </div>
           </Card>
         </div>
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }
 

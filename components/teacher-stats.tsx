@@ -2,7 +2,7 @@
 
 import { useTeachers } from "@/context/teachers-context";
 import { TeacherStatus } from "@/types/teacher";
-import SimpleCard from "./common/simple-card";
+import { Metric, MetricGroup } from "./common/metric";
 
 export function TeacherStats() {
   const { teachers } = useTeachers();
@@ -14,30 +14,11 @@ export function TeacherStats() {
     (t) => t.status === TeacherStatus.ON_LEAVE
   ).length;
 
-  const stats = [
-    {
-      title: "Total Teachers",
-      value: teachers.length,
-    },
-    {
-      title: "Active Teachers",
-      value: activeTeachers,
-    },
-    {
-      title: "On Leave",
-      value: onLeaveTeachers,
-    },
-  ];
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-      {stats.map((stat) => (
-        <SimpleCard
-          key={stat.title}
-          title={stat.title}
-          value={stat.value.toString()}
-        />
-      ))}
-    </div>
+    <MetricGroup columns={3}>
+      <Metric label="Total teachers" value={teachers.length} />
+      <Metric label="Active" value={activeTeachers} />
+      <Metric label="On leave" value={onLeaveTeachers} />
+    </MetricGroup>
   );
 }
