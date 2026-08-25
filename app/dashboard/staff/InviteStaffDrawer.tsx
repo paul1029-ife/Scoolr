@@ -173,7 +173,7 @@ export function InviteStaffDrawer({
                 expires in 7 days.
               </p>
               <div className="mt-2 flex items-center gap-2">
-                <code className="flex-1 truncate rounded bg-white px-2 py-1 text-xs text-gray-700">
+                <code className="flex-1 truncate rounded bg-background px-2 py-1 text-xs text-foreground">
                   {manualLink}
                 </code>
                 <Button

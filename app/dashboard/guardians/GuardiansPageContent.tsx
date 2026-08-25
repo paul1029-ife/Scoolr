@@ -112,7 +112,7 @@ export function GuardiansPageContent({
         </div>
 
         <Card className="overflow-hidden rounded-lg border-0 shadow-sm">
-          <div className="border-b border-border bg-gray-100 px-6 py-4">
+          <div className="border-b border-border px-5 py-3">
             <h2 className="text-sm font-semibold tracking-tight text-foreground">All Guardians</h2>
           </div>
           <div className="overflow-x-auto">
@@ -135,7 +135,7 @@ export function GuardiansPageContent({
                     >
                       {guardians.length === 0 ? (
                         <span className="inline-flex flex-col items-center gap-2">
-                          <Users className="h-8 w-8 text-gray-300" />
+                          <Users className="size-8 text-muted-foreground/50" />
                           No guardians yet. Add one, or bring them in from the
                           Import page.
                         </span>

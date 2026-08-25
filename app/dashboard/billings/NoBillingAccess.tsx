@@ -1,26 +1,13 @@
-import { Lock } from "lucide-react";
+import { RestrictedPage } from "@/components/common/page-header";
 
 /** Billing is admin-only; teachers reaching this route see this instead. */
 export function NoBillingAccess() {
   return (
-    <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-border bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-        <h1 className="text-[15px] font-semibold tracking-tight text-foreground">Manage Billings</h1>
-      </div>
-      <div className="px-3">
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-            <Lock className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <h2 className="text-base font-medium text-gray-900">
-            Billing is restricted
-          </h2>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Only administrators can view fee structures and payment records.
-          </p>
-        </div>
-      </div>
-    </div>
+    <RestrictedPage
+      title="Billing"
+      heading="Billing is restricted"
+      description="Only administrators can view fee structures and payment records."
+    />
   );
 }
 

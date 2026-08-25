@@ -126,7 +126,7 @@ export function EventsPageContent({ events }: { events: EventListItem[] }) {
             {filteredEvents.length === 0 ? (
               <Card className="border-dashed">
                 <CardContent className="flex flex-col items-center justify-center p-12 text-center">
-                  <Calendar className="h-12 w-12 text-gray-300 mb-3" />
+                  <Calendar className="mb-3 size-8 text-muted-foreground/50" />
                   <p className="text-muted-foreground">
                     {events.length === 0
                       ? "No events yet. Use “Add New Event” to create one."
@@ -151,13 +151,13 @@ export function EventsPageContent({ events }: { events: EventListItem[] }) {
               filteredEvents.map((event) => (
                 <Card
                   key={event.id}
-                  className="hover:shadow-sm transition-shadow border-border"
+                  className="transition-colors duration-150 hover:border-border-strong"
                 >
                   <CardContent className="p-5">
                     <div className="space-y-4">
                       <div className="flex justify-between items-start">
                         <div className="space-y-1">
-                          <h3 className="text-lg text-gray-800">
+                          <h3 className="text-sm font-semibold text-foreground">
                             {event.title}
                           </h3>
                           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
@@ -224,7 +224,7 @@ export function EventsPageContent({ events }: { events: EventListItem[] }) {
           <div>
             <Card className="border-border sticky top-20">
               <CardHeader className="border-b border-border py-4 px-5">
-                <h2 className="text-gray-700">Calendar</h2>
+                <h2 className="text-sm font-semibold text-foreground">Calendar</h2>
               </CardHeader>
               <CardContent className="p-5">
                 <div className="space-y-5">
@@ -254,7 +254,7 @@ export function EventsPageContent({ events }: { events: EventListItem[] }) {
                         <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm text-gray-700 truncate">
+                        <h4 className="truncate text-[13px] font-medium text-foreground">
                           {event.title}
                         </h4>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -273,7 +273,7 @@ export function EventsPageContent({ events }: { events: EventListItem[] }) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full mt-2 border-dashed border-border text-muted-foreground hover:text-gray-700"
+                      className="mt-2 w-full border-dashed text-muted-foreground"
                       onClick={() => setIsAddEventModalOpen(true)}
                     >
                       <PlusCircle className="h-3 w-3 mr-2" />

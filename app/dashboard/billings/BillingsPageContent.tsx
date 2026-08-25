@@ -269,7 +269,7 @@ export function BillingsPageContent({
                             : `${classRate.toFixed(1)}%`}
                         </span>
                       </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                         <div
                           className="h-full rounded-full"
                           // Clamped: over-payment must not overflow the track.

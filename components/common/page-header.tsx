@@ -1,4 +1,6 @@
 import * as React from "react";
+import Link from "next/link";
+import { ArrowLeft, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -16,11 +18,16 @@ export function PageHeader({
   title,
   description,
   actions,
+  backHref,
+  backLabel = "Back",
   className,
 }: {
   title: string;
   description?: string;
   actions?: React.ReactNode;
+  /** Renders a back control before the title — used by the detail pages. */
+  backHref?: string;
+  backLabel?: string;
   className?: string;
 }) {
   return (
@@ -32,15 +39,26 @@ export function PageHeader({
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
-        <div className="min-w-0">
-          <h1 className="truncate text-[15px] font-semibold tracking-tight text-foreground">
-            {title}
-          </h1>
-          {description && (
-            <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
-              {description}
-            </p>
+        <div className="flex min-w-0 items-center gap-1.5">
+          {backHref && (
+            <Link
+              href={backHref}
+              aria-label={backLabel}
+              className="-ml-1.5 flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <ArrowLeft className="size-4" />
+            </Link>
           )}
+          <div className="min-w-0">
+            <h1 className="truncate text-[15px] font-semibold tracking-tight text-foreground">
+              {title}
+            </h1>
+            {description && (
+              <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
+                {description}
+              </p>
+            )}
+          </div>
         </div>
         {actions && (
           <div className="flex shrink-0 items-center gap-2">{actions}</div>
@@ -83,6 +101,73 @@ export function PageToolbar({
     >
       {children}
     </div>
+  );
+}
+
+/**
+ * A whole-screen notice, for the states rendered instead of the dashboard
+ * shell — no sidebar, no header, nothing to navigate to.
+ */
+export function FullPageNotice({
+  icon: Icon,
+  tone = "neutral",
+  title,
+  description,
+  action,
+}: {
+  icon: React.ElementType;
+  tone?: "neutral" | "warning";
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-canvas p-6">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 text-center">
+        <span
+          className={cn(
+            "mx-auto mb-4 flex size-10 items-center justify-center rounded-full",
+            tone === "warning"
+              ? "bg-warning-subtle text-warning"
+              : "bg-muted text-muted-foreground"
+          )}
+        >
+          <Icon className="size-5" />
+        </span>
+        <h1 className="text-base font-semibold tracking-tight text-foreground">
+          {title}
+        </h1>
+        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+        {action && <div className="mt-6">{action}</div>}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The page a role is not allowed to open. Keeps the header so the section
+ * still looks like part of the app rather than an error.
+ */
+export function RestrictedPage({
+  title,
+  heading,
+  description,
+}: {
+  title: string;
+  heading: string;
+  description: string;
+}) {
+  return (
+    <>
+      <PageHeader title={title} />
+      <PageBody>
+        <div className="rounded-lg border border-dashed border-border">
+          <EmptyState icon={Lock} title={heading} description={description} />
+        </div>
+      </PageBody>
+    </>
   );
 }
 

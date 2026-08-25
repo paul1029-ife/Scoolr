@@ -37,7 +37,7 @@ const ROLE_BADGE: Record<Role, string> = {
   [Role.ADMIN]: "border-border bg-muted text-foreground",
   [Role.TEACHER]: "border-border bg-muted text-muted-foreground",
   [Role.PARENT]: "bg-amber-100 text-amber-800",
-  [Role.STUDENT]: "bg-gray-100 text-gray-700",
+  [Role.STUDENT]: "bg-muted text-muted-foreground",
 };
 
 export function StaffPageContent({ staff }: { staff: StaffList }) {
@@ -159,7 +159,7 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
                   className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-gray-900">
+                    <p className="truncate text-[13px] font-medium text-foreground">
                       {invitation.email}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -178,7 +178,7 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
                     <Badge
                       className={
                         invitation.isExpired
-                          ? "bg-gray-100 text-muted-foreground"
+                          ? "bg-muted text-muted-foreground"
                           : "bg-amber-100 text-amber-800"
                       }
                     >

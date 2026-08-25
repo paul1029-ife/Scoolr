@@ -2,8 +2,8 @@ import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PageBody, PageHeader } from "@/components/common/page-header";
 import {
-  ArrowLeft,
   Calendar,
   Clock,
   Download,
@@ -12,7 +12,6 @@ import {
   Share2,
   Users,
 } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getEventById } from "@/lib/queries/events";
@@ -33,37 +32,29 @@ export default async function EventDetailsPage({
   }
 
   return (
-    <div className="container mx-auto space-y-8 max-w-7xl">
-      {/* Header Section */}
-      <div className="border-b px-4 border-border bg-white rounded-t-md flex sticky top-0 py-3 items-center justify-between z-10">
-        <div className="flex justify-center items-center gap-2">
-          <Link href="/dashboard/events">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+    <>
+      <PageHeader
+        title={event.title}
+        backHref="/dashboard/events"
+        backLabel="Back to events"
+        actions={
+          <>
+            <Button variant="outline">
+              <Share2 />
+              <span className="max-sm:sr-only">Share</span>
             </Button>
-          </Link>
-          <h1 className="text-[15px] font-semibold tracking-tight text-foreground">
-            {event.title}
-          </h1>
-        </div>
+            <Button variant="outline">
+              <Edit />
+              Edit event
+            </Button>
+          </>
+        }
+      />
 
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
-          <Button className="flex items-center gap-2">
-            <Edit className="h-4 w-4" />
-            Edit Event
-          </Button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4">
+      <PageBody className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {/* Left Column (2/3 width on large screens) */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="hover:shadow-sm transition-shadow border-border">
+        <div className="space-y-5 lg:col-span-2">
+          <Card>
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div>
@@ -134,7 +125,7 @@ export default async function EventDetailsPage({
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow border-border">
+          <Card>
             <CardHeader className="border-b pb-3">
               <h2 className="text-sm font-semibold tracking-tight text-foreground">Programme of Events</h2>
             </CardHeader>
@@ -147,7 +138,7 @@ export default async function EventDetailsPage({
                 <div className="space-y-4">
                   {event.programme.map((item, index) => (
                     <div key={index} className="flex items-start gap-3">
-                      <div className="p-1 bg-gray-200 rounded-full mt-1">
+                      <div className="mt-1 rounded-full bg-muted p-1">
                         <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
                       </div>
                       <p>{item}</p>
@@ -161,7 +152,7 @@ export default async function EventDetailsPage({
 
         {/* Right Column (1/3 width on large screens) */}
         <div className="space-y-6">
-          <Card className="hover:shadow-sm transition-shadow border-border">
+          <Card>
             <CardHeader className="border-b pb-3">
               <h2 className="text-sm font-semibold tracking-tight text-foreground">Staff in Charge</h2>
             </CardHeader>
@@ -175,7 +166,7 @@ export default async function EventDetailsPage({
                   {event.staff.map((person) => (
                     <div key={person.id} className="flex items-center gap-3">
                       {/* Initials rather than a placeholder image request. */}
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-700">
+                      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-foreground">
                         {person.name
                           .split(/\s+/)
                           .slice(0, 2)
@@ -197,7 +188,7 @@ export default async function EventDetailsPage({
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-sm transition-shadow border-border">
+          <Card>
             <CardHeader className="border-b pb-3">
               <h2 className="text-sm font-semibold tracking-tight text-foreground">Materials</h2>
             </CardHeader>
@@ -233,7 +224,7 @@ export default async function EventDetailsPage({
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }
