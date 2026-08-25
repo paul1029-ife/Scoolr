@@ -15,13 +15,12 @@ import {
 } from "@/components/ui/table";
 import {
   Search,
-  ArrowLeft,
   Download,
   Filter,
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import Link from "next/link";
+import { PageBody, PageHeader } from "@/components/common/page-header";
 import { Badge } from "@/components/ui/badge";
 import { AddStudentModal } from "./AddStudentModal";
 
@@ -57,33 +56,31 @@ export function ClassPageContent({
   };
 
   return (
-    <div className="mx-auto space-y-8">
-      {/* Header Section */}
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky  top-0 py-2 items-center justify-between z-10">
-        <div className="flex justify-center items-center gap-2">
-          <Link href="/dashboard/students">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+    <>
+      <PageHeader
+        title={className}
+        description={`${students.length} ${
+          students.length === 1 ? "student" : "students"
+        } on the register`}
+        backHref="/dashboard/students"
+        backLabel="Back to classes"
+        actions={
+          <>
+            <Button variant="outline">
+              <Download />
+              <span className="max-sm:sr-only">Export list</span>
             </Button>
-          </Link>
-          <h1 className="text-md text-gray-800 font-medium tracking-tight">
-            {className}
-          </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Export List
-          </Button>
-          <AddStudentModal classRoomId={classRoomId} />
-        </div>
-      </div>
+            <AddStudentModal classRoomId={classRoomId} />
+          </>
+        }
+      />
 
-      <Card className="mx-3 bg-gray-100">
-        <CardHeader className="border-b ">
-          <div className="flex flex-col md:flex-row gap-4 justify-between">
+      <PageBody>
+      <Card>
+        <CardHeader className="border-b border-border">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             <div className="relative flex-1">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search by name or registration number..."
                 className="pl-8"
@@ -92,8 +89,8 @@ export function ClassPageContent({
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
+              <Button variant="outline">
+                <Filter />
                 Filters
               </Button>
               <TakeAttendanceModal
@@ -162,7 +159,7 @@ export function ClassPageContent({
                         {percentage === null ? (
                           <Badge variant="secondary">No data</Badge>
                         ) : percentage >= 75 ? (
-                          <Badge className="bg-green-100 text-green-700">
+                          <Badge dot variant="success">
                             <CheckCircle2 className="h-3 w-3 mr-1" />
                             Good Standing
                           </Badge>
@@ -181,7 +178,8 @@ export function ClassPageContent({
           </div>
         </CardContent>
       </Card>
-    </div>
+      </PageBody>
+    </>
   );
 }
 

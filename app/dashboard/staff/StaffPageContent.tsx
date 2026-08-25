@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Search, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import SimpleCard from "@/components/common/simple-card";
+import { Metric, MetricGroup } from "@/components/common/metric";
+import { PageBody, PageHeader } from "@/components/common/page-header";
 
 import { updateUserRole } from "@/lib/actions/staff";
 import { runAction } from "@/lib/actions/run-action";
@@ -32,11 +33,11 @@ import { Role, roleLabel } from "@/lib/auth/permissions";
 import type { StaffList } from "@/lib/queries/staff";
 
 const ROLE_BADGE: Record<Role, string> = {
-  [Role.SUPER_ADMIN]: "bg-purple-100 text-purple-800",
-  [Role.ADMIN]: "bg-blue-100 text-blue-800",
-  [Role.TEACHER]: "bg-green-100 text-green-800",
+  [Role.SUPER_ADMIN]: "border-primary/20 bg-primary/10 text-primary",
+  [Role.ADMIN]: "border-border bg-muted text-foreground",
+  [Role.TEACHER]: "border-border bg-muted text-muted-foreground",
   [Role.PARENT]: "bg-amber-100 text-amber-800",
-  [Role.STUDENT]: "bg-gray-100 text-gray-700",
+  [Role.STUDENT]: "bg-muted text-muted-foreground",
 };
 
 export function StaffPageContent({ staff }: { staff: StaffList }) {
@@ -105,26 +106,27 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
     });
 
   return (
-    <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-        <h1 className="text-md font-medium tracking-tight">Staff Accounts</h1>
-        <InviteStaffDrawer canInviteSuperAdmin={viewerIsSuperAdmin} />
-      </div>
+    <>
+      <PageHeader
+        title="Staff accounts"
+        description="Who can sign in, and what they may do"
+        actions={<InviteStaffDrawer canInviteSuperAdmin={viewerIsSuperAdmin} />}
+      />
 
-      <div className="px-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <SimpleCard title="Accounts" value={`${members.length}`} />
-          <SimpleCard title="Administrators" value={`${adminCount}`} />
-          <SimpleCard
-            title="Teachers"
-            value={`${
+      <PageBody>
+        <MetricGroup columns={3} className="mb-5">
+          <Metric label="Accounts" value={members.length} />
+          <Metric label="Administrators" value={adminCount} />
+          <Metric
+            label="Teachers"
+            value={
               members.filter((member) => member.role === Role.TEACHER).length
-            }`}
+            }
           />
-        </div>
+        </MetricGroup>
 
-        <div className="mb-6 flex items-start gap-3 rounded-md border border-blue-100 bg-blue-50 p-3 text-sm text-blue-900">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+        <div className="mb-5 flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 p-3 text-[13px] text-muted-foreground">
+          <ShieldCheck className="mt-0.5 size-4 shrink-0" />
           <p>
             These are sign-in accounts and what each may do. Staff records live
             on the{" "}
@@ -134,7 +136,7 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
         </div>
 
         <div className="mb-6 relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by name or email..."
             className="pl-10"
@@ -144,9 +146,9 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
         </div>
 
         {invitations.length > 0 && (
-          <Card className="mb-6 border-0 shadow-sm overflow-hidden rounded-lg">
-            <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">
+          <Card className="mb-6 overflow-hidden">
+            <div className="border-b border-border px-5 py-3.5">
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">
                 Pending Invitations
               </h2>
             </div>
@@ -157,7 +159,7 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
                   className="flex flex-wrap items-center justify-between gap-3 px-6 py-4"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-gray-900">
+                    <p className="truncate text-[13px] font-medium text-foreground">
                       {invitation.email}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -176,7 +178,7 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
                     <Badge
                       className={
                         invitation.isExpired
-                          ? "bg-gray-100 text-gray-600"
+                          ? "bg-muted text-muted-foreground"
                           : "bg-amber-100 text-amber-800"
                       }
                     >
@@ -197,9 +199,9 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
           </Card>
         )}
 
-        <Card className="border-0 shadow-sm overflow-hidden rounded-lg">
-          <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">All Accounts</h2>
+        <Card className="overflow-hidden">
+          <div className="border-b border-border px-5 py-3.5">
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">All Accounts</h2>
           </div>
           <div className="overflow-x-auto">
             <Table>
@@ -300,8 +302,8 @@ export function StaffPageContent({ staff }: { staff: StaffList }) {
             </Table>
           </div>
         </Card>
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }
 

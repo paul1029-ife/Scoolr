@@ -97,7 +97,7 @@ export function InviteStaffDrawer({
       title="Invite a colleague"
       description="They'll get a link to create an account with the role you choose."
       trigger={
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button>
           <UserPlus className="h-4 w-4 mr-2" />
           Invite Staff
         </Button>
@@ -121,7 +121,6 @@ export function InviteStaffDrawer({
             <Button
               type="submit"
               disabled={isSaving || !email}
-              className="bg-blue-600 hover:bg-blue-700"
             >
               {isSaving ? "Sending..." : "Send invitation"}
             </Button>
@@ -140,7 +139,7 @@ export function InviteStaffDrawer({
               autoComplete="off"
               required
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               The invitation only works for this exact address.
             </p>
           </div>
@@ -174,7 +173,7 @@ export function InviteStaffDrawer({
                 expires in 7 days.
               </p>
               <div className="mt-2 flex items-center gap-2">
-                <code className="flex-1 truncate rounded bg-white px-2 py-1 text-xs text-gray-700">
+                <code className="flex-1 truncate rounded bg-background px-2 py-1 text-xs text-foreground">
                   {manualLink}
                 </code>
                 <Button

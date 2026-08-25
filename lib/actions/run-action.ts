@@ -23,6 +23,10 @@ function redirectToLogin() {
   redirecting = true;
 
   const next = window.location.pathname + window.location.search;
+  // Deliberately a document load, not router.push(): the session has expired,
+  // so every cached RSC payload in the client router was rendered for a user
+  // who is no longer signed in and has to be discarded.
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
   window.location.assign(
     `/login?reason=session-expired&next=${encodeURIComponent(next)}`
   );

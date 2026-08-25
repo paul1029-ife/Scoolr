@@ -27,7 +27,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import SimpleCard from "@/components/common/simple-card";
+import { Metric, MetricGroup } from "@/components/common/metric";
+import { PageBody, PageHeader } from "@/components/common/page-header";
 
 import { removeGuardian } from "@/lib/actions/guardians";
 import { runAction } from "@/lib/actions/run-action";
@@ -83,26 +84,25 @@ export function GuardiansPageContent({
   };
 
   return (
-    <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-        <h1 className="text-md font-medium tracking-tight">
-          Parents &amp; Guardians
-        </h1>
-        <AddGuardianButton students={students} />
-      </div>
+    <>
+      <PageHeader
+        title="Parents & guardians"
+        description="Who to contact for each student"
+        actions={<AddGuardianButton students={students} />}
+      />
 
-      <div className="px-3">
-        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <SimpleCard title="Guardians" value={`${guardians.length}`} />
-          <SimpleCard title="Students linked" value={`${linkedStudentCount}`} />
-          <SimpleCard
-            title="Not yet linked"
-            value={`${Math.max(students.length - linkedStudentCount, 0)}`}
+      <PageBody>
+        <MetricGroup columns={3} className="mb-5">
+          <Metric label="Guardians" value={guardians.length} />
+          <Metric label="Students linked" value={linkedStudentCount} />
+          <Metric
+            label="Not yet linked"
+            value={Math.max(students.length - linkedStudentCount, 0)}
           />
-        </div>
+        </MetricGroup>
 
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+        <div className="relative mb-5">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name, phone or child…"
             className="pl-10"
@@ -112,8 +112,8 @@ export function GuardiansPageContent({
         </div>
 
         <Card className="overflow-hidden rounded-lg border-0 shadow-sm">
-          <div className="border-b border-gray-200 bg-gray-100 px-6 py-4">
-            <h2 className="text-lg font-medium text-gray-900">All Guardians</h2>
+          <div className="border-b border-border px-5 py-3">
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">All Guardians</h2>
           </div>
           <div className="overflow-x-auto">
             <Table>
@@ -135,7 +135,7 @@ export function GuardiansPageContent({
                     >
                       {guardians.length === 0 ? (
                         <span className="inline-flex flex-col items-center gap-2">
-                          <Users className="h-8 w-8 text-gray-300" />
+                          <Users className="size-8 text-muted-foreground/50" />
                           No guardians yet. Add one, or bring them in from the
                           Import page.
                         </span>
@@ -168,7 +168,7 @@ export function GuardiansPageContent({
                               className="font-normal"
                             >
                               {link.studentName}
-                              <span className="ml-1 text-gray-500">
+                              <span className="ml-1 text-muted-foreground">
                                 ({relationshipLabel[link.relationship]})
                               </span>
                             </Badge>
@@ -196,7 +196,7 @@ export function GuardiansPageContent({
                               size="icon"
                               disabled={deletingId === guardian.id}
                               aria-label={`Remove ${guardian.fullName}`}
-                              className="text-gray-400 hover:text-red-600"
+                              className="text-muted-foreground hover:text-red-600"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -231,7 +231,7 @@ export function GuardiansPageContent({
             </Table>
           </div>
         </Card>
-      </div>
+      </PageBody>
 
       {editing && (
         <GuardianDrawer
@@ -244,7 +244,7 @@ export function GuardiansPageContent({
           }}
         />
       )}
-    </div>
+    </>
   );
 }
 

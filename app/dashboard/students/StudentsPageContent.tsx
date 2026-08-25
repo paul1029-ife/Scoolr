@@ -1,13 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, BookOpen } from "lucide-react";
+import { Search, Filter, BookOpen, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import SimpleCard from "@/components/common/simple-card";
+import { Metric, MetricGroup } from "@/components/common/metric";
+import {
+  EmptyState,
+  PageBody,
+  PageHeader,
+} from "@/components/common/page-header";
 
 import { SchoolLevel } from "@/lib/generated/prisma/enums";
 import type { ClassRoomSummary } from "@/lib/queries/students";
@@ -34,109 +39,126 @@ export function StudentsPageContent({
   );
 
   return (
-    <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-        <h1 className="text-md font-medium tracking-tight">Manage Students</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-          <BookOpen className="h-4 w-4 mr-2" />
-          Teacher roles
-        </Button>
-      </div>
+    <>
+      <PageHeader
+        title="Students"
+        description="Classes and enrolment across your school"
+        actions={
+          <Button variant="outline">
+            <BookOpen />
+            Teacher roles
+          </Button>
+        }
+      />
 
-      <div className="px-3">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
-          <SimpleCard title="Total Students" value={`${totalStudents}`} />
-          <SimpleCard title="Total Classes" value={`${classRooms.length}`} />
-          <SimpleCard
-            title="Average Attendance"
+      <PageBody>
+        <MetricGroup columns={3} className="mb-5">
+          <Metric label="Total students" value={totalStudents} />
+          <Metric label="Classes" value={classRooms.length} />
+          <Metric
+            label="Average attendance"
             value={
               averageAttendance === null
                 ? "—"
                 : `${averageAttendance.toFixed(1)}%`
             }
           />
-        </div>
+        </MetricGroup>
 
-        {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search classes..."
-              className="pl-10 py-2 border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"
+              className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 text-gray-700 border-gray-300"
-          >
-            <Filter className="h-4 w-4" />
+          <Button variant="outline">
+            <Filter />
             Filters
           </Button>
         </div>
 
-        {/* Junior School Section */}
-        <h2 className="text-lg text-gray-900 mb-3">Junior School</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {juniorClasses.map((cls) => (
-            <ClassCard key={cls.id} cls={cls} />
-          ))}
-        </div>
+        <ClassSection title="Junior school" classes={juniorClasses} />
+        <ClassSection
+          title="Senior school"
+          classes={seniorClasses}
+          className="mt-6"
+        />
+      </PageBody>
+    </>
+  );
+}
 
-        {/* Senior School Section */}
-        <h2 className="text-lg text-gray-900 mt-6 mb-3">Senior School</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {seniorClasses.map((cls) => (
+function ClassSection({
+  title,
+  classes,
+  className,
+}: {
+  title: string;
+  classes: ClassRoomSummary[];
+  className?: string;
+}) {
+  return (
+    <section className={className}>
+      <h2 className="mb-2.5 text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
+        {title}
+      </h2>
+      {classes.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={BookOpen}
+            title={`No ${title.toLowerCase()} classes`}
+            description="Classes you create for this level will appear here."
+          />
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {classes.map((cls) => (
             <ClassCard key={cls.id} cls={cls} />
           ))}
         </div>
-      </div>
-    </div>
+      )}
+    </section>
   );
 }
 
 function ClassCard({ cls }: { cls: ClassRoomSummary }) {
   const attendance = cls.averageAttendance;
 
+  // Attendance bands: green is healthy, amber needs attention, and no data
+  // stays neutral rather than being coloured as if it were a result.
+  const attendanceVariant =
+    attendance === null ? "secondary" : attendance >= 90 ? "success" : "warning";
+
   return (
-    <Link href={`/dashboard/students/${cls.slug}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer border-0 shadow-sm overflow-hidden">
-        <CardContent className="p-0">
-          <div className="px-4 py-3 bg-gray-200 border-b">
-            <div className="flex justify-between items-center">
-              <h3 className="text-md text-gray-900">
-                {[cls.name, cls.arm].filter(Boolean).join(" ")}
-              </h3>
-              <Badge
-                variant="secondary"
-                className={`px-2 py-1 text-xs font-medium ${
-                  attendance === null
-                    ? "bg-gray-100 text-gray-600"
-                    : attendance >= 95
-                    ? "bg-green-100 text-green-800"
-                    : attendance >= 90
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-orange-100 text-orange-800"
-                }`}
-              >
-                {attendance === null
-                  ? "No attendance yet"
-                  : `${attendance.toFixed(0)}% Attendance`}
-              </Badge>
-            </div>
-          </div>
-          <div className="p-4 space-y-3">
-            <p className="text-sm font-medium">
-              {cls.totalStudents} {cls.totalStudents === 1 ? "Student" : "Students"}
-            </p>
-            <p className="text-sm text-gray-600">
-              Teacher: {cls.formTeacherName ?? "Unassigned"}
+    <Link
+      href={`/dashboard/students/${cls.slug}`}
+      className="group block rounded-lg"
+    >
+      <Card className="h-full transition-colors duration-150 group-hover:border-border-strong group-hover:bg-muted/30">
+        <div className="flex items-start justify-between gap-3 px-4 py-3.5">
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-semibold text-foreground">
+              {[cls.name, cls.arm].filter(Boolean).join(" ")}
+            </h3>
+            <p className="mt-0.5 text-[13px] text-muted-foreground">
+              {cls.totalStudents}{" "}
+              {cls.totalStudents === 1 ? "student" : "students"}
             </p>
           </div>
-        </CardContent>
+          <Badge dot variant={attendanceVariant} className="shrink-0">
+            {attendance === null ? "No data" : `${attendance.toFixed(0)}%`}
+          </Badge>
+        </div>
+        <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-2.5">
+          <span className="truncate text-xs text-muted-foreground">
+            {cls.formTeacherName ?? "No form teacher"}
+          </span>
+          <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
+        </div>
       </Card>
     </Link>
   );

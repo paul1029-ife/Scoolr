@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { PageBody, PageHeader } from "@/components/common/page-header";
+import { Metric, MetricGroup } from "@/components/common/metric";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -35,10 +37,10 @@ import {
 import { MAX_BYTES, MAX_ROWS, type ImportAnalysis } from "@/lib/import/analyse";
 
 const STATUS_STYLE = {
-  create: "bg-green-100 text-green-800",
-  update: "bg-blue-100 text-blue-800",
+  create: "border-success/20 bg-success-subtle text-success",
+  update: "border-primary/20 bg-primary/10 text-primary",
   duplicate: "bg-amber-100 text-amber-800",
-  invalid: "bg-red-100 text-red-800",
+  invalid: "border-destructive/20 bg-destructive-subtle text-destructive",
 } as const;
 
 const STATUS_LABEL = {
@@ -157,55 +159,56 @@ export function ImportPageContent({
 
   if (!entity) {
     return (
-      <div className="mx-auto space-y-8">
-        <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-          <h1 className="text-md font-medium tracking-tight">Import Data</h1>
-        </div>
+      <>
+        <PageHeader
+          title="Import"
+          description="Bring existing records in from a spreadsheet"
+        />
 
-        <div className="px-3">
-          <p className="mb-6 max-w-2xl text-sm text-gray-600">
-            Bring existing records in from a spreadsheet. Download the template,
-            fill it in, and you&apos;ll see exactly what will change before
-            anything is saved.
+        <PageBody>
+          <p className="mb-5 max-w-2xl text-[13px] text-muted-foreground">
+            Download the template, fill it in, and you&apos;ll see exactly what
+            will change before anything is saved.
           </p>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {IMPORT_ENTITIES.map((item) => (
-              <Card
+              <button
                 key={item.entity}
-                className="cursor-pointer border-0 shadow-sm transition-shadow hover:shadow-md"
+                type="button"
                 onClick={() => setEntity(item.entity)}
+                className="group rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-border-strong hover:bg-muted/30"
               >
-                <CardContent className="p-5">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-                    <FileSpreadsheet className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <h2 className="font-medium text-gray-900">{item.label}</h2>
-                  <p className="mt-1 text-sm text-gray-600">
-                    {item.description}
-                  </p>
-                </CardContent>
-              </Card>
+                <span className="mb-3 flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors group-hover:text-foreground">
+                  <FileSpreadsheet className="size-4" />
+                </span>
+                <span className="block text-sm font-semibold text-foreground">
+                  {item.label}
+                </span>
+                <span className="mt-1 block text-[13px] text-muted-foreground">
+                  {item.description}
+                </span>
+              </button>
             ))}
           </div>
 
           {recentImports.length > 0 && (
-            <div className="mt-10">
-              <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            <div className="mt-8">
+              <h2 className="mb-2.5 text-[13px] font-medium uppercase tracking-wider text-muted-foreground">
                 Recent imports
               </h2>
-              <Card className="border-0 shadow-sm">
-                <div className="divide-y">
+              <Card className="overflow-hidden">
+                <div className="divide-y divide-border">
                   {recentImports.map((job) => (
                     <div
                       key={job.id}
                       className="flex flex-wrap items-center justify-between gap-2 px-5 py-3"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-gray-900">
+                        <p className="truncate text-[13px] font-medium text-foreground">
                           {job.label} · {job.fileName}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           {new Date(job.createdAt).toLocaleString("en-GB", {
                             day: "numeric",
                             month: "short",
@@ -215,15 +218,13 @@ export function ImportPageContent({
                           {job.importedByName ? ` · ${job.importedByName}` : ""}
                         </p>
                       </div>
-                      <div className="flex gap-2 text-xs">
-                        <Badge className="bg-green-100 text-green-800">
-                          {job.createdCount} new
-                        </Badge>
-                        <Badge className="bg-blue-100 text-blue-800">
+                      <div className="flex shrink-0 gap-1.5">
+                        <Badge variant="success">{job.createdCount} new</Badge>
+                        <Badge variant="secondary">
                           {job.updatedCount} updated
                         </Badge>
                         {job.skippedCount > 0 && (
-                          <Badge className="bg-gray-100 text-gray-700">
+                          <Badge variant="outline">
                             {job.skippedCount} skipped
                           </Badge>
                         )}
@@ -234,8 +235,8 @@ export function ImportPageContent({
               </Card>
             </div>
           )}
-        </div>
-      </div>
+        </PageBody>
+      </>
     );
   }
 
@@ -245,21 +246,23 @@ export function ImportPageContent({
     (analysis?.summary.create ?? 0) + (analysis?.summary.update ?? 0);
 
   return (
-    <div className="mx-auto space-y-8">
-      <div className="border-b px-3 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-2 items-center justify-between z-10">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
+    <>
+      {/* Not PageHeader: the back control resets local wizard state rather
+          than navigating, so it is a button and not a link. */}
+      <div className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/75 sm:px-6">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <button
+            type="button"
             onClick={() => {
               setEntity(null);
               reset();
             }}
             aria-label="Back to import options"
+            className="-ml-1.5 flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-md font-medium tracking-tight">
+            <ArrowLeft className="size-4" />
+          </button>
+          <h1 className="truncate text-[15px] font-semibold tracking-tight text-foreground">
             Import {definition?.label}
           </h1>
         </div>
@@ -272,22 +275,22 @@ export function ImportPageContent({
             )
           }
         >
-          <Download className="mr-2 h-4 w-4" />
+          <Download />
           Download template
         </Button>
       </div>
 
-      <div className="px-3">
+      <PageBody>
         {/* Expected columns */}
-        <Card className="mb-6 border-0 shadow-sm">
-          <CardContent className="p-5">
-            <h2 className="mb-3 text-sm font-semibold text-gray-900">
+        <Card className="mb-5">
+          <CardContent className="pt-5">
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
               Expected columns
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase text-gray-500">
+                  <tr className="text-left text-xs uppercase text-muted-foreground">
                     <th className="pb-2 pr-4">Column</th>
                     <th className="pb-2 pr-4">Required</th>
                     <th className="pb-2 pr-4">Notes</th>
@@ -298,21 +301,21 @@ export function ImportPageContent({
                   {definition?.columns.map((column) => (
                     <tr key={column.key}>
                       <td className="py-2 pr-4">
-                        <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs">
+                        <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
                           {column.key}
                         </code>
                       </td>
                       <td className="py-2 pr-4">
                         {column.required ? (
-                          <span className="text-red-600">Yes</span>
+                          <span className="text-destructive">Yes</span>
                         ) : (
-                          <span className="text-gray-400">No</span>
+                          <span className="text-muted-foreground">No</span>
                         )}
                       </td>
-                      <td className="py-2 pr-4 text-gray-600">
+                      <td className="py-2 pr-4 text-muted-foreground">
                         {column.hint || "—"}
                       </td>
-                      <td className="py-2 text-gray-600">{column.example}</td>
+                      <td className="py-2 text-muted-foreground">{column.example}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -338,13 +341,12 @@ export function ImportPageContent({
               <Button
                 onClick={() => fileInput.current?.click()}
                 disabled={isWorking}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 <Upload className="mr-2 h-4 w-4" />
                 {isWorking ? "Reading…" : "Choose CSV file"}
               </Button>
               {fileName && (
-                <span className="text-sm text-gray-600">{fileName}</span>
+                <span className="text-sm text-muted-foreground">{fileName}</span>
               )}
               {analysis && (
                 <Button variant="ghost" onClick={reset} disabled={isWorking}>
@@ -352,7 +354,7 @@ export function ImportPageContent({
                 </Button>
               )}
             </div>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-muted-foreground">
               Up to {MAX_ROWS.toLocaleString()} rows per file. Nothing is saved
               until you confirm.
             </p>
@@ -362,7 +364,7 @@ export function ImportPageContent({
         {/* Preview */}
         {analysis && (
           <>
-            <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+            <MetricGroup className="mb-4">
               {(
                 [
                   ["create", analysis.summary.create, "To create"],
@@ -371,19 +373,12 @@ export function ImportPageContent({
                   ["invalid", analysis.summary.invalid, "Errors"],
                 ] as const
               ).map(([key, count, label]) => (
-                <Card key={key} className="border-0 shadow-sm">
-                  <CardContent className="p-4">
-                    <p className="text-xs text-gray-500">{label}</p>
-                    <p className="mt-1 text-2xl font-semibold text-gray-900">
-                      {count}
-                    </p>
-                  </CardContent>
-                </Card>
+                <Metric key={key} label={label} value={count} />
               ))}
-            </div>
+            </MetricGroup>
 
             {analysis.unknownColumns.length > 0 && (
-              <div className="mb-4 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+              <div className="mb-4 flex items-start gap-2 rounded-lg border border-warning/20 bg-warning-subtle p-3 text-[13px] text-warning">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>
                   These columns aren&apos;t recognised and will be ignored:{" "}
@@ -394,16 +389,16 @@ export function ImportPageContent({
               </div>
             )}
 
-            <Card className="mb-6 border-0 shadow-sm overflow-hidden">
-              <div className="border-b bg-gray-100 px-5 py-3">
-                <h2 className="text-sm font-semibold text-gray-900">
+            <Card className="mb-6 overflow-hidden">
+              <div className="border-b border-border px-5 py-3">
+                <h2 className="text-sm font-semibold text-foreground">
                   Preview — {analysis.summary.total} row
                   {analysis.summary.total === 1 ? "" : "s"}
                 </h2>
               </div>
               <div className="max-h-[480px] overflow-auto">
                 <Table>
-                  <TableHeader className="sticky top-0 bg-white">
+                  <TableHeader className="sticky top-0 bg-card">
                     <TableRow>
                       <TableHead className="w-16">Line</TableHead>
                       <TableHead className="w-28">Status</TableHead>
@@ -417,10 +412,10 @@ export function ImportPageContent({
                       <React.Fragment key={row.line}>
                         <TableRow
                           className={
-                            row.status === "invalid" ? "bg-red-50/50" : undefined
+                            row.status === "invalid" ? "bg-destructive-subtle/60" : undefined
                           }
                         >
-                          <TableCell className="text-gray-500">
+                          <TableCell className="text-muted-foreground">
                             {row.line}
                           </TableCell>
                           <TableCell>
@@ -433,18 +428,18 @@ export function ImportPageContent({
                               key={column.key}
                               className={
                                 row.errors[column.key]
-                                  ? "text-red-700"
+                                  ? "text-destructive"
                                   : undefined
                               }
                             >
                               {row.raw[column.key] || (
-                                <span className="text-gray-300">—</span>
+                                <span className="text-muted-foreground/50">—</span>
                               )}
                             </TableCell>
                           ))}
                         </TableRow>
                         {(Object.keys(row.errors).length > 0 || row.note) && (
-                          <TableRow className="bg-gray-50">
+                          <TableRow className="bg-muted/40">
                             <TableCell />
                             <TableCell
                               colSpan={analysis.columns.length + 1}
@@ -453,7 +448,7 @@ export function ImportPageContent({
                               {Object.entries(row.errors).map(([key, message]) => (
                                 <span
                                   key={key}
-                                  className="mr-4 inline-block text-red-700"
+                                  className="mr-4 inline-block text-destructive"
                                 >
                                   <span className="font-medium">
                                     {key === "_" ? "Row" : key}:
@@ -462,7 +457,7 @@ export function ImportPageContent({
                                 </span>
                               ))}
                               {row.note && (
-                                <span className="text-gray-600">{row.note}</span>
+                                <span className="text-muted-foreground">{row.note}</span>
                               )}
                             </TableCell>
                           </TableRow>
@@ -475,10 +470,10 @@ export function ImportPageContent({
             </Card>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {importableCount > 0 ? (
                   <>
-                    <CheckCircle2 className="mr-1 inline h-4 w-4 text-green-600" />
+                    <CheckCircle2 className="mr-1 inline h-4 w-4 text-success" />
                     {importableCount} row{importableCount === 1 ? "" : "s"} will
                     be imported.
                     {analysis.summary.invalid + analysis.summary.duplicate >
@@ -492,7 +487,7 @@ export function ImportPageContent({
                   </>
                 ) : (
                   <>
-                    <AlertCircle className="mr-1 inline h-4 w-4 text-red-600" />
+                    <AlertCircle className="mr-1 inline h-4 w-4 text-destructive" />
                     Nothing can be imported — fix the errors and try again.
                   </>
                 )}
@@ -500,7 +495,6 @@ export function ImportPageContent({
               <Button
                 onClick={handleCommit}
                 disabled={isWorking || importableCount === 0}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 {isWorking
                   ? "Importing…"
@@ -511,8 +505,8 @@ export function ImportPageContent({
             </div>
           </>
         )}
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }
 

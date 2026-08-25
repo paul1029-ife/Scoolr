@@ -141,7 +141,6 @@ export const PaymentModal = React.memo(
               <Button
                 type="submit"
                 disabled={isSaving || !formData.studentId}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 {isSaving ? "Saving..." : "Save Payment"}
               </Button>

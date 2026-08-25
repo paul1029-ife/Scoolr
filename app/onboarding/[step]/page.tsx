@@ -79,7 +79,7 @@ export default async function OnboardingStepPage({
               Invitations live on the Staff page, where you can also change
               roles and withdraw invites.
             </p>
-            <Button asChild className="mt-4 bg-blue-600 hover:bg-blue-700">
+            <Button asChild className="mt-4">
               <Link href="/dashboard/staff">
                 <UserPlus className="mr-2 h-4 w-4" />
                 Open Staff page

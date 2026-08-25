@@ -2,17 +2,16 @@ import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PageBody, PageHeader } from "@/components/common/page-header";
 import {
   Users,
   Clock,
-  ArrowLeft,
   GraduationCap,
   Calendar,
   Building2,
   BookOpen,
   Edit,
 } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getSubjectById } from "@/lib/queries/subjects";
@@ -33,33 +32,26 @@ export default async function SubjectDetailPage({
   }
 
   return (
-    <div className="container mx-auto space-y-8 max-w-7xl">
-      {/* Header Section */}
-      <div className="border-b px-4 border-gray-200 bg-white rounded-t-md flex sticky top-0 py-3 items-center justify-between z-10">
-        <div className="flex justify-center items-center gap-2">
-          <Link href="/dashboard/subjects">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <h1 className="text-md text-gray-800 font-medium tracking-tight">
-            {subject.name}
-          </h1>
-        </div>
+    <>
+      <PageHeader
+        title={subject.name}
+        description={subject.department}
+        backHref="/dashboard/subjects"
+        backLabel="Back to subjects"
+        actions={
+          <Button variant="outline">
+            <Edit />
+            Edit subject
+          </Button>
+        }
+      />
 
-        <Button className="flex items-center gap-2 bg-blue-600">
-          <Edit className="h-4 w-4" />
-          Edit Subject
-        </Button>
-      </div>
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-4">
+      <PageBody className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {/* Left Column (2/3 width on large screens) */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-gray-100 shadow-sm">
+        <div className="space-y-5 lg:col-span-2">
+          <Card>
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Overview</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Overview</h2>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
@@ -69,7 +61,7 @@ export default async function SubjectDetailPage({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Users className="h-5 w-5 text-blue-700" />
                     </div>
                     <div>
@@ -79,7 +71,7 @@ export default async function SubjectDetailPage({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Building2 className="h-5 w-5 text-green-700" />
                     </div>
                     <div>
@@ -89,7 +81,7 @@ export default async function SubjectDetailPage({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Calendar className="h-5 w-5 text-purple-700" />
                     </div>
                     <div>
@@ -101,7 +93,7 @@ export default async function SubjectDetailPage({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-100 rounded-lg">
+                    <div className="p-2 rounded-lg bg-muted">
                       <Clock className="h-5 w-5 text-yellow-700" />
                     </div>
                     <div>
@@ -114,9 +106,9 @@ export default async function SubjectDetailPage({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-100 shadow-sm">
+          <Card>
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Course Objectives</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Course Objectives</h2>
             </CardHeader>
             <CardContent className="p-6">
               {subject.objectives.length === 0 ? (
@@ -127,7 +119,7 @@ export default async function SubjectDetailPage({
                 <ul className="space-y-3">
                   {subject.objectives.map((objective, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <div className="p-1 bg-gray-200 rounded-full mt-1">
+                      <div className="mt-1 rounded-full bg-muted p-1">
                         <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
                       </div>
                       <span>{objective}</span>
@@ -141,9 +133,9 @@ export default async function SubjectDetailPage({
 
         {/* Right Column (1/3 width on large screens) */}
         <div className="space-y-6">
-          <Card className="bg-gray-100 shadow-sm">
+          <Card>
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Subject Information</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Subject Information</h2>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div>
@@ -173,9 +165,9 @@ export default async function SubjectDetailPage({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-100 shadow-sm">
+          <Card>
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Course Materials</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Course Materials</h2>
             </CardHeader>
             <CardContent className="p-6">
               {subject.materials.length === 0 ? (
@@ -195,9 +187,9 @@ export default async function SubjectDetailPage({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-100 shadow-sm">
+          <Card>
             <CardHeader className="border-b pb-3">
-              <h2 className="text-xl font-semibold">Prerequisites</h2>
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">Prerequisites</h2>
             </CardHeader>
             <CardContent className="p-6">
               {subject.prerequisites.length === 0 ? (
@@ -215,7 +207,7 @@ export default async function SubjectDetailPage({
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+      </PageBody>
+    </>
   );
 }

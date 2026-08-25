@@ -116,7 +116,7 @@ export function TakeAttendanceModal({
       title="Take Attendance"
       description="Re-taking attendance for the same date replaces that day's record."
       width="xl"
-      trigger={<Button className="bg-blue-600">Take Attendance</Button>}
+      trigger={<Button>Take Attendance</Button>}
     >
       <div className="flex h-full flex-col">
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
@@ -176,7 +176,6 @@ export function TakeAttendanceModal({
                         onCheckedChange={(checked) =>
                           handleAttendanceChange(student.id, checked === true)
                         }
-                        className="bg-blue-600"
                       />
                     </TableCell>
                   </TableRow>
@@ -197,7 +196,6 @@ export function TakeAttendanceModal({
               Cancel
             </Button>
             <Button
-              className="bg-blue-600 hover:bg-blue-700"
               onClick={handleSubmit}
               disabled={isSaving || students.length === 0}
             >

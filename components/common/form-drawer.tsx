@@ -55,11 +55,11 @@ export function FormDrawer({
         className={cn("flex w-full flex-col gap-0 p-0", WIDTHS[width])}
       >
         <SheetHeader className="shrink-0 space-y-1 border-b px-6 py-4 text-left">
-          <SheetTitle className="text-lg font-semibold text-gray-800">
+          <SheetTitle className="text-[15px] font-semibold tracking-tight text-foreground">
             {title}
           </SheetTitle>
           {description && (
-            <SheetDescription className="text-sm text-gray-500">
+            <SheetDescription className="text-[13px] text-muted-foreground">
               {description}
             </SheetDescription>
           )}

@@ -101,7 +101,7 @@ const AddSubjectModal = ({
       description="Create a subject and optionally timetable it to a class."
       width="lg"
       trigger={
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button>
           Add New Subject
         </Button>
       }
@@ -121,7 +121,6 @@ const AddSubjectModal = ({
             <Button
               type="submit"
               disabled={isSaving}
-              className="bg-blue-600 hover:bg-blue-700"
             >
               {isSaving ? "Saving..." : "Save Subject"}
             </Button>

@@ -178,7 +178,6 @@ export function GuardianDrawer({
             <Button
               type="submit"
               disabled={isSaving}
-              className="bg-blue-600 hover:bg-blue-700"
             >
               {isSaving ? "Saving…" : guardian ? "Save changes" : "Add guardian"}
             </Button>
@@ -216,7 +215,7 @@ export function GuardianDrawer({
               placeholder="08031234567"
               required
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               This identifies the guardian — siblings sharing a parent share
               this number.
             </p>
@@ -254,12 +253,12 @@ export function GuardianDrawer({
           {/* Linking needs a saved guardian to attach to. */}
           {guardian && (
             <div className="border-t pt-4">
-              <h3 className="mb-3 text-sm font-medium text-gray-900">
+              <h3 className="mb-3 text-sm font-semibold text-foreground">
                 Children
               </h3>
 
               {guardian.students.length === 0 ? (
-                <p className="mb-3 text-sm text-gray-500">
+                <p className="mb-3 text-sm text-muted-foreground">
                   No students linked yet.
                 </p>
               ) : (
@@ -267,13 +266,13 @@ export function GuardianDrawer({
                   {guardian.students.map((link) => (
                     <li
                       key={link.studentId}
-                      className="flex items-center justify-between rounded-md border border-gray-200 px-3 py-2"
+                      className="flex items-center justify-between rounded-md border border-border px-3 py-2"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-gray-900">
+                        <p className="truncate text-[13px] font-medium text-foreground">
                           {link.studentName}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           {link.registrationNumber}
                           {link.className ? ` · ${link.className}` : ""} ·{" "}
                           {relationshipLabel[link.relationship]}
@@ -281,7 +280,7 @@ export function GuardianDrawer({
                       </div>
                       <div className="flex items-center gap-2">
                         {link.isPrimary && (
-                          <Badge className="bg-blue-100 text-blue-800">
+                          <Badge variant="secondary">
                             Primary
                           </Badge>
                         )}
@@ -292,7 +291,7 @@ export function GuardianDrawer({
                           disabled={linkingId === link.studentId}
                           onClick={() => handleUnlink(link.studentId)}
                           aria-label={`Unlink ${link.studentName}`}
-                          className="text-gray-400 hover:text-red-600"
+                          className="text-muted-foreground hover:text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -376,7 +375,7 @@ export function AddGuardianButton({
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button className="bg-blue-600 text-white hover:bg-blue-700">
+        <Button>
           <UserPlus className="mr-2 h-4 w-4" />
           Add Guardian
         </Button>

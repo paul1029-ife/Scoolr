@@ -27,12 +27,17 @@ const ACTIVITY_EVENTS = ["pointerdown", "keydown", "scroll"] as const;
  * through.
  */
 export function SessionKeepAlive() {
-  const lastActivityAt = useRef(Date.now());
+  // Seeded in the effect rather than here: reading the clock during render is
+  // impure. Mounting still counts as activity, because the effect runs before
+  // the first tick of the interval it sets up.
+  const lastActivityAt = useRef(0);
 
   useEffect(() => {
     const markActive = () => {
       lastActivityAt.current = Date.now();
     };
+
+    markActive();
 
     const refresh = async () => {
       // A hidden tab is not "in use"; nor is one nobody has touched in a while.
